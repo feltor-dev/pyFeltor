@@ -27,6 +27,11 @@ class Grid:
     def bc(self):
         return self.__bc
 
+    @property
+    def ndim(self):
+        """ Return the number of dimensions in the grid"""
+        return len(self.x0)
+
     @n.setter
     def n(self, n) :
         self.__n = np.asarray(n)
@@ -50,8 +55,4 @@ class Grid:
     def size( self): # makes the shape of numpy arrays
         return (self.n*self.N)
 
-# Should this be called ndim as in numpy?
-    def dim( self):
-        """ Return the number of dimensions in the grid"""
-        return len(self.x0)
 

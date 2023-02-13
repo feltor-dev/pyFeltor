@@ -3,9 +3,9 @@ import scipy.sparse
 
 def derivative( dim, grid, bc, direction):
     deriv = dx.normed( grid.n[dim], grid.N[dim], grid.h()[dim], bc, direction)
-    if ( grid.dim() == 1):
+    if ( grid.ndim == 1):
         return deriv
-    for d in range( 0, grid.dim()):
+    for d in range( 0, grid.ndim):
         if d != dim:
             identity = scipy.sparse.identity( grid.n[dim]*grid.N[dim])
             if d < dim :
@@ -16,9 +16,9 @@ def derivative( dim, grid, bc, direction):
 
 def jump( dim, grid, bc):
     deriv = dx.jump_normed( grid.n[dim], grid.N[dim], grid.h()[dim], bc)
-    if ( grid.dim() == 1):
+    if ( grid.ndim == 1):
         return deriv
-    for d in range( 0, grid.dim()):
+    for d in range( 0, grid.ndim):
         if d != dim:
             identity = scipy.sparse.identity( grid.n[dim]*grid.N[dim])
             if d < dim :

@@ -1,6 +1,9 @@
 import pytest
 from pyfeltor import dg
 import numpy as np
+
+# Run with pytest-3 -s . to see stdout output
+
 def zero( y, x):
     return 0
 def sine( y, x):

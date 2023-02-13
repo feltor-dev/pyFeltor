@@ -2,16 +2,16 @@ import pytest
 import numpy as np
 from pyfeltor import dg
 
-# Run with pytest -s . to see stdout output
+# Run with pytest-3 -s . to see stdout output
 
 def test_grid():
     print ( "TEST GRID")
     g1d = dg.Grid( [1],[2],[3], [24], [dg.bc.PER])
     print( g1d.x0, g1d.x1, g1d.n, g1d.N, g1d.bc)
-    assert g1d.dim() == 1
+    assert g1d.ndim == 1
     g2d = dg.Grid( x0 = (0,0), x1 = (1,1), n = (3,3), N = (24,24), bc = (dg.bc.PER, dg.bc.DIR) )
     print( g2d.x0, g2d.x1, g2d.n, g2d.N, g2d.bc)
-    assert g2d.dim() == 2
+    assert g2d.ndim == 2
 
 def test_creation() :
     print ( "TEST CREATION")

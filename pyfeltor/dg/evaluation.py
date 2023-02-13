@@ -8,19 +8,19 @@ def evaluate( function, grid):
     grid: instance of dg.Grid
     """
     xs = []
-    dims = grid.dim()
-    for dim in range( 0, dims):
+    ndim = grid.ndim
+    for dim in range( 0, ndim):
         xs.append( create.abscissas(grid, dim))
 
-    if dims == 1 :
+    if ndim == 1 :
         return np.array( function( xs[0]))
-    if dims == 2 :
+    if ndim == 2 :
         return np.array( function( xs[0][:,None], xs[1][None,:]))
-    if dims == 3 :
+    if ndim == 3 :
         return np.array( function( xs[0][:,None,None], xs[1][None,:,None]),xs[2][None,None,:])
-    if dims == 4 :
+    if ndim == 4 :
         return np.array( function( xs[0][:,None,None,None], xs[1][None,:,None,None]),xs[2][None,None,:,None],xs[3][None,None,None,:])
-    if dims > 4 :
+    if ndim > 4 :
         raise "Evaluate is not implemented for dim > 4"
 
 

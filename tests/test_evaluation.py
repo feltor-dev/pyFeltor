@@ -2,6 +2,8 @@ import pytest
 import numpy as np
 from pyfeltor import dg
 
+# Run with pytest-3 -s . to see stdout output
+
 def function2d( y, x):
     rho = 0.20943951023931953 # pi/15
     delta = 0.050000000000000003

@@ -3,7 +3,7 @@ import numpy as np
 def weights( grid):
     """ Create dG weights on given grid """
     weights = np.array([1])
-    for dim in range(0, grid.dim()):
+    for dim in range(0, grid.ndim):
         (x,w) = np.polynomial.legendre.leggauss(grid.n[dim])
         wdim = np.tile( w, grid.N[dim])*grid.h()[dim]/2.0
         weights = np.kron( weights, wdim)
