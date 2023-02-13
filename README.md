@@ -6,6 +6,7 @@ There are a few things to watch out for
 - there is only one grid class `dg.Grid` that generalises `dg::Grid1d`, `dg::Grid2d` and `dg::Grid3d`
 - the x dimension is the **last/rightmost** dimension
 
+Here is how the grid generation, evaluation and integration works
 ```python
 import numpy as np
 from pyfeltor import dg
@@ -39,4 +40,25 @@ print( f"Correct integral is {sol2d} while numerical is {num2d}")
 assert np.abs(sol2d - num2d) < 1e-10
 
 ```
+
+In order to compute derivatives we use the `scipy.sparse` package
+```python
+import numpy as np
+from pyfeltor import dg
+
+g2d = dg.Grid([0.1, 0], [2 * np.pi + 0.1, np.pi], [n, n], [Ny, Nx], [bcy, bcx])
+w2d = dg.create.weights(g2d)
+f2d = dg.evaluate(sine, g2d)
+x2d = dg.evaluate(cosx, g2d)
+
+# Remember that the x dimension is the rightmost
+dx = dg.create.dx(1, g2d, g2d.bc[1], dg.direction.forward)
+# and the y dimension is the leftmost
+dy = dg.create.dx(0, g2d, g2d.bc[0], dg.direction.centered)
+error = dx.dot(f2d) - x2d
+norm = np.sqrt(np.sum(w2d * error**2)) / np.sqrt(w2d * x2d ** 2)
+print(f"Relative error to true solution: {norm}")
+
+```
+
 
