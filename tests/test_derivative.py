@@ -28,8 +28,8 @@ def test_derivative():
     g2d = dg.Grid([0.1, 0], [2 * np.pi + 0.1, np.pi], [n, n], [Ny, Nx], [bcy, bcx])
     w2d = dg.create.weights(g2d)
 
-    dx2 = dg.create.derivative(1, g2d, g2d.bc[1], dg.direction.forward)
-    dy2 = dg.create.derivative(0, g2d, g2d.bc[0], dg.direction.centered)
+    dx2 = dg.create.dx(1, g2d, g2d.bc[1], dg.direction.forward)
+    dy2 = dg.create.dx(0, g2d, g2d.bc[0], dg.direction.centered)
     jx2 = dg.create.jump(1, g2d, g2d.bc[1])
     jy2 = dg.create.jump(0, g2d, g2d.bc[0])
     m2 = [dx2, dy2, jx2, jy2]

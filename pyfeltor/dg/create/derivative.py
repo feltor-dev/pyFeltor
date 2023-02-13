@@ -1,9 +1,9 @@
-from . import dx
+from .dx import normed, jump_normed
 import scipy.sparse
 
 
-def derivative(dim, grid, bc, direction):
-    deriv = dx.normed(grid.n[dim], grid.N[dim], grid.h()[dim], bc, direction)
+def dx(dim, grid, bc, direction):
+    deriv = normed(grid.n[dim], grid.N[dim], grid.h()[dim], bc, direction)
     if grid.ndim == 1:
         return deriv
     for d in range(0, grid.ndim):
@@ -17,7 +17,7 @@ def derivative(dim, grid, bc, direction):
 
 
 def jump(dim, grid, bc):
-    deriv = dx.jump_normed(grid.n[dim], grid.N[dim], grid.h()[dim], bc)
+    deriv = jump_normed(grid.n[dim], grid.N[dim], grid.h()[dim], bc)
     if grid.ndim == 1:
         return deriv
     for d in range(0, grid.ndim):

@@ -2,4 +2,4 @@
 """ The python version of the dg library
 """
 from .weights import weights, abscissas
-from .derivative import derivative, jump
+from .derivative import dx, jump
