@@ -2,12 +2,15 @@
 An implementation of feltor in python
 
 
+There are a few things to watch out for
+- there is only one grid class `dg.Grid` that generalises `dg::Grid1d`, `dg::Grid2d` and `dg::Grid3d`
+- the x dimension is the **last/rightmost** dimension
 
 ```python
 import numpy as np
 from pyfeltor import dg
 
-def function2d( y, x):
+def function2d( y, x): # x comes last
     rho = 0.20943951023931953 # pi/15
     delta = 0.050000000000000003
     return np.where( y <= np.pi,
@@ -19,7 +22,7 @@ Nx = 12
 Ny = 28
 Nz = 100
 g1d = dg.Grid( [1],[2],[n], [Nx], [dg.bc.PER])
-g2d = dg.Grid( (0,0),(2*np.pi, 2*np.pi),(n,n), (Ny,Nx), (dg.bc.PER,dg.bc.PER))
+g2d = dg.Grid( (0,0),(2*np.pi, 2*np.pi),(n,n), (Ny,Nx), (dg.bc.PER,dg.bc.PER)) # first y then x!!
 w1d = dg.create.weights( g1d)
 w2d = dg.create.weights( g2d)
 func1d = dg.evaluate( lambda x : np.exp(x), g1d)
