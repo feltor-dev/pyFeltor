@@ -3,3 +3,4 @@ tests/__pycache__
 pyfeltor/__pycache__
 pyfeltor/dg/__pycache__
 pyfeltor/dg/create/__pycache__
+*.swp
