@@ -3,4 +3,3 @@
 """
 from .weights import weights, abscissas
 from .derivative import derivative, jump
-
