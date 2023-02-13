@@ -21,6 +21,36 @@ def cosy(y, x):
     return np.cos(y) * np.sin(x)
 
 
+def test_dx( ):
+    n, N = 3, 20
+    gPER = dg.Grid( [0.1], [2*np.pi+0.1], [n], [N], [dg.bc.PER]);
+    gDIR = dg.Grid( [0], [np.pi], [n], [N], [dg.bc.DIR]);
+    gNEU = dg.Grid( [np.pi/2.], [3*np.pi/2.], [n], [N], [dg.bc.NEU]);
+    gDIR_NEU = dg.Grid( [0], [np.pi/2.], [n], [N], [dg.bc.DIR_NEU]);
+    gNEU_DIR = dg.Grid( [np.pi/2.], [np.pi], [n], [N], [dg.bc.NEU_DIR]);
+    g = [gPER, gDIR, gNEU, gDIR_NEU, gNEU_DIR]
+    print("TEST NORMAL TOPOLOGY: YOU SHOULD SEE CONVERGENCE FOR ALL OUTPUTS!!!")
+    for i in range(0,5):
+        print( "Boundary condition ", g[i].bc[0])
+        hs = dg.create.dx( 0, g[i], g[i].bc[0], dg.direction.centered);
+        hf = dg.create.dx( 0, g[i], g[i].bc[0], dg.direction.forward);
+        hb = dg.create.dx( 0, g[i], g[i].bc[0], dg.direction.backward);
+        js = dg.create.jump( 0, g[i], g[i].bc[0]);
+        func = dg.evaluate( lambda x : np.sin(x), g[i]);
+        error = func;
+        w1d = dg.create.weights( g[i]);
+        deri = dg.evaluate( lambda x : np.cos(x), g[i]);
+        null = dg.evaluate( lambda x: 0, g[i]);
+        error = deri - hs.dot(func)
+        print( f"Distance to true solution (symmetric): {np.sqrt(np.sum( w1d*error**2) )}")
+        error = deri - hf.dot(func)
+        print( f"Distance to true solution (forward): {np.sqrt(np.sum( w1d*error**2) )}")
+        error = deri - hb.dot(func)
+        print( f"Distance to true solution (backward): {np.sqrt(np.sum( w1d*error**2) )}")
+        error = null - js.dot(func)
+        print( f"Distance to true solution (jump     ): {np.sqrt(np.sum( w1d*error**2) )}")
+
+
 def test_derivative():
     n, Nx, Ny, Nz = 3, 24, 28, 100
     print(f"On Grid {n} x {Nx} x {Ny} x {Nz}")

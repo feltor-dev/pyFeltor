@@ -15,8 +15,8 @@ def symm(n, N, h, bcx):
 
     a = 1.0 / 2.0 * np.matmul(t, d - d.transpose())
     # bcx = PER
-    a_bound_right = a
-    a_bound_left = a
+    a_bound_right = a.copy()
+    a_bound_left = a.copy()
     # left boundary
     if (bcx == bc.DIR) or (bcx == bc.DIR_NEU):
         a_bound_left += 0.5 * np.matmul(t, l)
@@ -27,8 +27,6 @@ def symm(n, N, h, bcx):
         a_bound_right -= 0.5 * np.matmul(t, r)
     elif (bcx == bc.NEU) or (bcx == bc.DIR_NEU):
         a_bound_right += 0.5 * np.matmul(t, r)
-    if bcx == bc.PER:
-        a_bound_left = a_bound_right = a
     b = np.matmul(t, (1.0 / 2.0 * rl))
     bp = np.matmul(t, (-1.0 / 2.0 * lr))  # pitfall: T*-m^T is NOT -(T*m)^T
     # transform to XSPACE
@@ -111,8 +109,8 @@ def plus(n, N, h, bcx):
 
     a = np.matmul(t, -l - d.transpose())
     # bcx = PER
-    a_bound_left = a  # PER, NEU, and NEU_DIR
-    a_bound_right = a  # PER, DIR, and NEU_DIR
+    a_bound_left = a.copy()  # PER, NEU, and NEU_DIR
+    a_bound_right = a.copy()  # PER, DIR, and NEU_DIR
     if (bcx == bc.DIR) or (bcx == bc.DIR_NEU):
         a_bound_left = np.matmul(t, (-d.transpose()))
     if (bcx == bc.NEU) or (bcx == bc.DIR_NEU):
@@ -185,8 +183,8 @@ def minus(n, N, h, bcx):
 
     a = np.matmul(t, l + d)
     # bcx = PER
-    a_bound_right = a  # PER, NEU and DIR_NEU
-    a_bound_left = a  # PER, DIR and DIR_NEU
+    a_bound_right = a.copy()  # PER, NEU and DIR_NEU
+    a_bound_left = a.copy()  # PER, DIR and DIR_NEU
     if (bcx == bc.DIR) or (bcx == bc.NEU_DIR):
         a_bound_right = np.matmul(t, (-d.transpose()))
     if (bcx == bc.NEU) or (bcx == bc.NEU_DIR):
@@ -236,12 +234,12 @@ def minus(n, N, h, bcx):
             for i in range(0, n):
                 for j in range(0, n):
                     rows.append(k * n + i)
-                    cols.append((k * n + j) % (n * N))
-                    vals.append(a[i, j])
+                    cols.append(((k - 1) * n + j) % (n * N))
+                    vals.append(bp[i, j])
 
                     rows.append(k * n + i)
-                    cols.append(((k + 1) * n + j) % (n * N))
-                    vals.append(b[i, j])
+                    cols.append((k * n + j) % (n * N))
+                    vals.append(a[i, j])
 
     # sort
     rows, cols, vals = zip(*sorted(zip(rows, cols, vals)))
@@ -282,10 +280,10 @@ def jump_normed(n, N, h, bcx):
     t = ops.pipj_inv(n)
     t *= 2.0 / h
     a = np.matmul(t, l + r)
-    a_bound_left = a  # DIR and PER
+    a_bound_left = a.copy()  # DIR and PER
     if (bcx == bc.NEU) or (bcx == bc.NEU_DIR):
         a_bound_left = np.matmul(t, r)
-    a_bound_right = a  # DIR and PER
+    a_bound_right = a.copy()  # DIR and PER
     if (bcx == bc.NEU) or (bcx == bc.DIR_NEU):
         a_bound_right = np.matmul(t, l)
     b = -np.matmul(t, rl)
