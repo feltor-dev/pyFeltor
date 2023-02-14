@@ -1,47 +1,80 @@
-# pyfeltor
-An implementation of feltor in python
+# pyFeltor
+An implementation of feltor's dg library in python
 
+[![LICENSE : MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-There are a few things to watch out for
-- there is only one grid class `dg.Grid` that generalises `dg::Grid1d`, `dg::Grid2d` and `dg::Grid3d`
+## Rationale
+
+In order to analyse Feltor simulations python has turned out to be an invaluable tool.
+However, it is currently not possible to compute a dG derivative inside python once a
+field is loaded from a netCDF file. All diagnostics therefore have to be
+written by the simulation code and an extension involves writing the new
+diagnostics, re-compilation of code and a re-simulation of the result. This is
+a too costly interruption of the workflow for a simple task. The initial goal for this package is
+to provide the dG derivatives as they are used inside the dg library as well
+as other quality of life functions like weights, grids and the evaluate
+functions. In fact, since many numerical packages are available
+through python this enables many applications beyond simple simulations
+diagnostics. The only downside is of course that all functions are
+unparallelized in python.
+
+## Installation
+> You need python3 to install this module
+
+The simplest way is to install from the python package index [pypi](https://pypi.org/) via the package manager [pip](https://pip.pypa.io/en/stable/):
+```bash
+python3 -m pip install pyfeltor
+```
+
+To install from github you have to clone the repository and then use the package manager [pip](https://pip.pypa.io/en/stable/).
+
+```bash
+git clone https://github.com/feltor-dev/pyfeltor
+cd pyfeltor
+python3 -m pip install -e . # editable installation of the module
+# ... if asked, cancel all password prompts ...
+cd tests
+pytest-3 -s . # run all the unittests with output
+```
+
+## Usage
+
+Generally, pyfeltor is built to mimic the `dg` library in feltor.
+There are a few things to consider
+- the vector class pyfeltor uses is the numpy array
+- there is only one grid class `dg.Grid` that generalises `dg::Grid1d`,
+  `dg::Grid2d` and `dg::Grid3d`
+- the evaluate function generates numpy arrays with 1d, 2d, 3d etc **shape**
+  (in contrast to C++ arrays that are just flat in memory)
 - the x dimension is the **last/rightmost** dimension
+- the equivalent of the `dg::blas1` vector functions are just plain math
+  operators with numpy arrays
+- the equivalent of `dg::blas1::dot` and `dg::blas2::dot` is `np.sum`
+- the derivative matrices are generated as `scipy.sparse` matrices
+- the equivalent of `dg::blas::symv` is `dg.dot`; the name comes from the scipy
+  version of matrix-vector multiplication and returns its result. The function is
+  just a wrapper around the sparse matrix dot function but flattens the input
+  and reshapes the output array (Directly applying m.dot( v) to a shaped numpy
+  vector won't work)
 
 Here is how the grid generation, evaluation and integration works
 ```python
 import numpy as np
+# import dg library
 from pyfeltor import dg
 
-def function2d( y, x): # x comes last
-    rho = 0.20943951023931953 # pi/15
-    delta = 0.050000000000000003
-    return np.where( y <= np.pi,
-        delta*np.cos(x) - 1./rho/np.cosh( (y-np.pi/2.)/rho)/np.cosh( (y-np.pi/2.)/rho),
-        delta*np.cos(x) + 1./rho/np.cosh( (3.*np.pi/2.-y)/rho)/np.cosh( (3.*np.pi/2.-y)/rho))
+n, Nx = 3, 12
+grid = dg.Grid( [1],[2],[n], [Nx], [dg.bc.PER])
+weights = dg.create.weights( grid)
+func = dg.evaluate( lambda x : np.exp(x), grid)
 
-n = 3
-Nx = 12
-Ny = 28
-Nz = 100
-g1d = dg.Grid( [1],[2],[n], [Nx], [dg.bc.PER])
-g2d = dg.Grid( (0,0),(2*np.pi, 2*np.pi),(n,n), (Ny,Nx), (dg.bc.PER,dg.bc.PER)) # first y then x!!
-w1d = dg.create.weights( g1d)
-w2d = dg.create.weights( g2d)
-func1d = dg.evaluate( lambda x : np.exp(x), g1d)
-func2d = dg.evaluate( function2d, g2d)
-
-sol1d = np.exp(2)-np.exp(1)
-num1d = np.sum( w1d*func1d)
-print( f"Correct integral is {sol1d} while numerical is {num1d}")
-assert np.abs(sol1d - num1d)/sol1d < 1e-10
-
-sol2d = 0.
-num2d = np.sum( w2d*func2d)
-print( f"Correct integral is {sol2d} while numerical is {num2d}")
-assert np.abs(sol2d - num2d) < 1e-10
+sol = np.exp(2)-np.exp(1)
+# the equivalent of dg::blas1::dot
+num = np.sum( weights*func)
+print( f"Correct integral is {sol} while numerical is {num}")
 
 ```
-
-In order to compute derivatives we use the `scipy.sparse` package
+Here is an example of how to generate and use a derivative
 ```python
 import numpy as np
 from pyfeltor import dg
@@ -55,7 +88,7 @@ x2d = dg.evaluate(cosx, g2d)
 dx = dg.create.dx(1, g2d, g2d.bc[1], dg.direction.forward)
 # and the y dimension is the leftmost
 dy = dg.create.dx(0, g2d, g2d.bc[0], dg.direction.centered)
-error = dx.dot(f2d) - x2d
+error = dg.dot(dx,f2d) - x2d
 norm = np.sqrt(np.sum(w2d * error**2)) / np.sqrt(w2d * x2d ** 2)
 print(f"Relative error to true solution: {norm}")
 
