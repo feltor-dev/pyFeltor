@@ -17,7 +17,7 @@ def test_elliptic():
     bcx, bcy = dg.bc.DIR, dg.bc.PER
     n, Nx, Ny = 3, 64, 64
     jfactor = 1
-    grid = dg.Grid([0, 0], [ly, lx], [n, n], [Ny, Nx], [bcy, bcx])
+    grid = dg.Grid([0, 0], [ly, lx], [n, n], [Ny, Nx])
     w2d = dg.create.weights(grid)
     x = np.zeros(grid.size())
     b = dg.evaluate(rhs, grid)
@@ -44,7 +44,7 @@ def test_elliptic():
 
 def test_elliptic1d():
     print("TEST 1d ELLIPTIC")
-    grid1d = dg.Grid([0], [np.pi], [3], [4], [dg.bc.DIR])
+    grid1d = dg.Grid([0], [np.pi], [3], [4])
     w1d = dg.create.weights(grid1d)
     x = np.zeros(grid1d.size())
     b = dg.evaluate(lambda x: np.sin(x), grid1d)

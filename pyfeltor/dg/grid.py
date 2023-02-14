@@ -5,19 +5,17 @@ import numpy as np
 
 
 class Grid:
-    def __init__(self, x0, x1, n, N, bc):
+    def __init__(self, x0, x1, n, N):
         """Create from lists of same length, which is the dimension of the grid"""
         assert (
             (len(x0) == len(x1))
             and (len(x0) == len(n))
             and (len(x0) == len(N))
-            and (len(x0) == len(bc))
         )
         self.x0 = np.asarray(x0)  # must be numpy array of length dimension
         self.x1 = np.asarray(x1)  # lengths must be consistent
         self.n = np.asarray(n)
         self.N = np.asarray(N)
-        self.bc = bc
 
     @property
     def n(self):
@@ -34,10 +32,6 @@ class Grid:
     @property
     def x1(self):
         return self.__x1
-
-    @property
-    def bc(self):
-        return self.__bc
 
     @property
     def ndim(self):
@@ -64,10 +58,6 @@ class Grid:
     @x1.setter
     def x1(self, x1):
         self.__x1 = np.asarray(x1)
-
-    @bc.setter
-    def bc(self, bc):
-        self.__bc = bc
 
     def lx(self):
         return self.x1 - self.x0
