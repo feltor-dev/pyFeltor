@@ -16,7 +16,6 @@ def test_elliptic():
     lx, ly = np.pi, 2 * np.pi
     bcx, bcy = dg.bc.DIR, dg.bc.PER
     n, Nx, Ny = 3, 64, 64
-    eps = 1e-6
     jfactor = 1
     grid = dg.Grid([0, 0], [ly, lx], [n, n], [Ny, Nx], [bcy, bcx])
     w2d = dg.create.weights(grid)
