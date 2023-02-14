@@ -8,7 +8,7 @@ def dx(dim, grid, bc, direction):
         return deriv
     for d in range(0, grid.ndim):
         if d != dim:
-            identity = scipy.sparse.identity(grid.n[dim] * grid.N[dim])
+            identity = scipy.sparse.identity(grid.n[d] * grid.N[d])
             if d < dim:
                 deriv = scipy.sparse.kron(identity, deriv)
             else:
@@ -22,7 +22,7 @@ def jump(dim, grid, bc):
         return deriv
     for d in range(0, grid.ndim):
         if d != dim:
-            identity = scipy.sparse.identity(grid.n[dim] * grid.N[dim])
+            identity = scipy.sparse.identity(grid.n[d] * grid.N[d])
             if d < dim:
                 deriv = scipy.sparse.kron(identity, deriv)
             else:

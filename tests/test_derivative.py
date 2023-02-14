@@ -30,6 +30,7 @@ def test_dx( ):
     gNEU_DIR = dg.Grid( [np.pi/2.], [np.pi], [n], [N], [dg.bc.NEU_DIR]);
     g = [gPER, gDIR, gNEU, gDIR_NEU, gNEU_DIR]
     print("TEST NORMAL TOPOLOGY: YOU SHOULD SEE CONVERGENCE FOR ALL OUTPUTS!!!")
+    print("COMPARE TO dx_t.cu")
     for i in range(0,5):
         print( "Boundary condition ", g[i].bc[0])
         hs = dg.create.dx( 0, g[i], g[i].bc[0], dg.direction.centered);
@@ -69,12 +70,12 @@ def test_derivative():
     null2 = dg.evaluate(zero, g2d)
     sol2 = [dx2d, dy2d, null2, null2]
     # binary2[4562611930300281864,4553674328256556132,4567083257206218817,4574111364446550002]
+    sol = [0.0010775034079703078,0.00027314872436790867,0.0021410107540649087,0.006471682818855125]
 
     print("TEST 2D: DX, DY, JX, JY")
     for i in range(0, 4):
         error = sol2[i].copy()
-        print(m2[i].shape)
-        print(f2d.flatten().shape)
-        error = -m2[i].dot(f2d.flatten()) + error
-        norm = np.sqrt(np.sum(w2d * error**2)) / np.sqrt(w2d * sol2[i] ** 2)
-        print(f"Relative error to true solution: {norm}")
+        error = -dg.dot( m2[i], f2d) + error
+        norm = np.sqrt(np.sum(w2d * error**2))
+        print(f"Absolute error to true solution: {norm}")
+        assert norm == sol[i]

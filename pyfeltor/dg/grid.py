@@ -44,6 +44,11 @@ class Grid:
         """Return the number of dimensions in the grid"""
         return len(self.x0)
 
+    @property
+    def shape(self):
+        """Same as size: n*N """
+        return self.size()
+
     @n.setter
     def n(self, n):
         self.__n = np.asarray(n)
