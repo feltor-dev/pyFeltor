@@ -8,30 +8,37 @@ from pyfeltor import dg
 def function2d(y, x):
     rho = 0.20943951023931953  # pi/15
     delta = 0.050000000000000003
-    return np.where(
-        y <= np.pi,
-        delta * np.cos(x)
-        - 1.0
-        / rho
-        / np.cosh((y - np.pi / 2.0) / rho)
-        / np.cosh((y - np.pi / 2.0) / rho),
-        delta * np.cos(x)
-        + 1.0
-        / rho
-        / np.cosh((3.0 * np.pi / 2.0 - y) / rho)
-        / np.cosh((3.0 * np.pi / 2.0 - y) / rho),
-    )
+    # return np.where(
+
+    if y <= np.pi:
+        return delta * np.cos(x) - 1.0 / rho / np.cosh(
+            (y - np.pi / 2.0) / rho
+        ) / np.cosh((y - np.pi / 2.0) / rho)
+    else:
+        return delta * np.cos(x) + 1.0 / rho / np.cosh(
+            (3.0 * np.pi / 2.0 - y) / rho
+        ) / np.cosh((3.0 * np.pi / 2.0 - y) / rho)
 
 
-def test_evalution():
+def test_evaluation():
+    n, Nx, Ny, Nz = 3, 9, 5, 4
+    equi = dg.Grid([-7, -5, -10], [-3, 5, 10], [1, 1, 1], [n * Nz, n * Ny, n * Nx])
+    z = dg.evaluate(lambda z, y, x: z * x, equi)
+    y = dg.evaluate(lambda z, y, x: y, equi)
+    x = dg.evaluate(lambda z, y, x: x, equi)
+    print("Length of arrays", len(z), len(y), len(x))
+    assert (len(z) == grid.size())
+    assert (len(y) == grid.size())
+    assert (len(x) == grid.size())
+
+
+def test_integration():
     n = 3
     Nx = 12
     Ny = 28
     Nz = 100
-    g1d = dg.Grid([1], [2], [n], [Nx], [dg.bc.PER])
-    g2d = dg.Grid(
-        (0, 0), (2 * np.pi, 2 * np.pi), (n, n), (Ny, Nx), (dg.bc.PER, dg.bc.PER)
-    )
+    g1d = dg.Grid([1], [2], [n], [Nx])
+    g2d = dg.Grid((0, 0), (2 * np.pi, 2 * np.pi), (n, n), (Ny, Nx))
     w1d = dg.create.weights(g1d)
     w2d = dg.create.weights(g2d)
     func1d = dg.evaluate(lambda x: np.exp(x), g1d)

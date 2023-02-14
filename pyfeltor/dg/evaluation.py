@@ -15,23 +15,12 @@ def evaluate(function, grid):
         xs.append(create.abscissas(grid, dim))
 
     if ndim == 1:
-        return np.array(function(xs[0]))
+        return np.array( [ function(x) for x in xs[0]])
     if ndim == 2:
-        return np.array(function(xs[0][:, None], xs[1][None, :])).ravel()
+        return np.array( [ function(y, x) for y in xs[0] for x in xs[1] ])
     if ndim == 3:
-        return np.array(
-            function(
-                xs[0][:, None, None], xs[1][None, :, None], xs[2][None, None, :]
-            ).ravel()
-        )
+        return np.array( [function( z,y,x) for z in xs[0] for y in xs[1] for x in xs[2]])
     if ndim == 4:
-        return np.array(
-            function(
-                xs[0][:, None, None, None],
-                xs[1][None, :, None, None],
-                xs[2][None, None, :, None],
-                xs[3][None, None, None, :],
-            )
-        ).ravel()
+        return np.array( [function( xx, z,y,x) for xx in xs[0] for z in xs[1] for y in xs[2] for x in xs[3]])
     if ndim > 4:
         raise "Evaluate is not implemented for dim > 4"
