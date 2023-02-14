@@ -13,30 +13,30 @@ def symm(n, N, h, bcx):
     t = ops.pipj_inv(n)
     t *= 2.0 / h
 
-    a = 1.0 / 2.0 * np.matmul(t, d - d.transpose())
+    a = 1.0 / 2.0 * t @ ( d - d.transpose()) # @ is matrix multiplication
     # bcx = PER
     a_bound_right = a.copy()
     a_bound_left = a.copy()
     # left boundary
     if (bcx == bc.DIR) or (bcx == bc.DIR_NEU):
-        a_bound_left += 0.5 * np.matmul(t, l)
+        a_bound_left += 0.5 * (t @ l)
     elif (bcx == bc.NEU) or (bcx == bc.NEU_DIR):
-        a_bound_left -= 0.5 * np.matmul(t, l)
+        a_bound_left -= 0.5 * (t @ l)
     # right boundary
     if (bcx == bc.DIR) or (bcx == bc.NEU_DIR):
-        a_bound_right -= 0.5 * np.matmul(t, r)
+        a_bound_right -= 0.5 * (t @ r)
     elif (bcx == bc.NEU) or (bcx == bc.DIR_NEU):
-        a_bound_right += 0.5 * np.matmul(t, r)
-    b = np.matmul(t, (1.0 / 2.0 * rl))
-    bp = np.matmul(t, (-1.0 / 2.0 * lr))  # pitfall: T*-m^T is NOT -(T*m)^T
+        a_bound_right += 0.5 * (t @ r)
+    b = t @ (1.0 / 2.0 * rl)
+    bp = t @ (-1.0 / 2.0 * lr)  # pitfall: T*-m^T is NOT -(T*m)^T
     # transform to XSPACE
     backward = ops.backward(n)
     forward = ops.forward(n)
-    a = np.matmul(np.matmul(backward, a), forward)
-    b = np.matmul(np.matmul(backward, b), forward)
-    bp = np.matmul(np.matmul(backward, bp), forward)
-    a_bound_left = np.matmul(np.matmul(backward, a_bound_left), forward)
-    a_bound_right = np.matmul(np.matmul(backward, a_bound_right), forward)
+    a = (backward @ a) @ forward
+    b = (backward @ b) @ forward
+    bp = (backward @ bp) @ forward
+    a_bound_left = (backward @ a_bound_left) @ forward
+    a_bound_right = (backward @ a_bound_right) @ forward
     # assemble the matrix
     rows = []
     cols = []
@@ -107,22 +107,22 @@ def plus(n, N, h, bcx):
     t = ops.pipj_inv(n)
     t *= 2.0 / h
 
-    a = np.matmul(t, -l - d.transpose())
+    a = t @ ( -l - d.transpose())
     # bcx = PER
     a_bound_left = a.copy()  # PER, NEU, and NEU_DIR
     a_bound_right = a.copy()  # PER, DIR, and NEU_DIR
     if (bcx == bc.DIR) or (bcx == bc.DIR_NEU):
-        a_bound_left = np.matmul(t, (-d.transpose()))
+        a_bound_left = t @ (-d.transpose())
     if (bcx == bc.NEU) or (bcx == bc.DIR_NEU):
-        a_bound_right = np.matmul(t, (d))
-    b = np.matmul(t, rl)
+        a_bound_right = t @ d
+    b = t @ rl
     # transform to XSPACE
     backward = ops.backward(n)
     forward = ops.forward(n)
-    a = np.matmul(np.matmul(backward, a), forward)
-    b = np.matmul(np.matmul(backward, b), forward)
-    a_bound_left = np.matmul(np.matmul(backward, a_bound_left), forward)
-    a_bound_right = np.matmul(np.matmul(backward, a_bound_right), forward)
+    a = (backward @ a) @ forward
+    b = (backward @ b) @ forward
+    a_bound_left = (backward @ a_bound_left) @ forward
+    a_bound_right = (backward @ a_bound_right) @ forward
     # assemble the matrix
     rows = []
     cols = []
@@ -181,22 +181,22 @@ def minus(n, N, h, bcx):
     t = ops.pipj_inv(n)
     t *= 2.0 / h
 
-    a = np.matmul(t, l + d)
+    a = t @ (l + d)
     # bcx = PER
     a_bound_right = a.copy()  # PER, NEU and DIR_NEU
     a_bound_left = a.copy()  # PER, DIR and DIR_NEU
     if (bcx == bc.DIR) or (bcx == bc.NEU_DIR):
-        a_bound_right = np.matmul(t, (-d.transpose()))
+        a_bound_right = t @ (-d.transpose())
     if (bcx == bc.NEU) or (bcx == bc.NEU_DIR):
-        a_bound_left = np.matmul(t, d)
-    bp = -np.matmul(t, lr)
+        a_bound_left = t @ d
+    bp = -t @ lr
     # transform to XSPACE
     backward = ops.backward(n)
     forward = ops.forward(n)
-    a = np.matmul(np.matmul(backward, a), forward)
-    bp = np.matmul(np.matmul(backward, bp), forward)
-    a_bound_left = np.matmul(np.matmul(backward, a_bound_left), forward)
-    a_bound_right = np.matmul(np.matmul(backward, a_bound_right), forward)
+    a = (backward @ a) @ forward
+    bp = (backward @ bp) @ forward
+    a_bound_left = (backward @ a_bound_left) @ forward
+    a_bound_right = (backward @ a_bound_right) @ forward
     # assemble the matrix
     rows = []
     cols = []
@@ -250,11 +250,11 @@ def naive(n, N, h):
     d = ops.pidxpj(n)
     t = ops.pipj_inv(n)
     t *= 2.0 / h
-    a = np.matmul(t, d)
+    a = t @ d
     # transform to XSPACE
     backward = ops.backward(n)
     forward = ops.forward(n)
-    a = np.matmul(np.matmul(backward, a), forward)
+    a = (backward @ a) @ forward
 
     # assemble the matrix
     rows = []
@@ -279,23 +279,23 @@ def jump_normed(n, N, h, bcx):
 
     t = ops.pipj_inv(n)
     t *= 2.0 / h
-    a = np.matmul(t, l + r)
+    a = t @ (l + r)
     a_bound_left = a.copy()  # DIR and PER
     if (bcx == bc.NEU) or (bcx == bc.NEU_DIR):
-        a_bound_left = np.matmul(t, r)
+        a_bound_left = t @ r
     a_bound_right = a.copy()  # DIR and PER
     if (bcx == bc.NEU) or (bcx == bc.DIR_NEU):
-        a_bound_right = np.matmul(t, l)
-    b = -np.matmul(t, rl)
-    bp = -np.matmul(t, lr)
+        a_bound_right = t @ l
+    b = -t @ rl
+    bp = -t @ lr
     # transform to XSPACE
     backward = ops.backward(n)
     forward = ops.forward(n)
-    a = np.matmul(np.matmul(backward, a), forward)
-    b = np.matmul(np.matmul(backward, b), forward)
-    bp = np.matmul(np.matmul(backward, bp), forward)
-    a_bound_left = np.matmul(np.matmul(backward, a_bound_left), forward)
-    a_bound_right = np.matmul(np.matmul(backward, a_bound_right), forward)
+    a = (backward @ a) @ forward
+    b = (backward @ b) @ forward
+    bp = (backward @ bp) @ forward
+    a_bound_left = (backward @ a_bound_left) @ forward
+    a_bound_right = (backward @ a_bound_right) @ forward
     # assemble the matrix
     rows = []
     cols = []

@@ -11,9 +11,9 @@ def elliptic(grid, bcs, directions, sigma, jumpfactor=1):
     ]
     right = [dx(i, grid, bcs[i], directions[i]) for i in range(0, grid.ndim)]
     jumps = [jump(i, grid, bcs[i]) for i in range(0, grid.ndim)]
-    matrix = -left[0].dot(sparse.diags(sigma)).dot(right[0]) + jumpfactor * jumps[0]
+    matrix = -left[0] @ sparse.diags(sigma) @ right[0] + jumpfactor * jumps[0]
     for i in range(1, grid.ndim):
         matrix += (
-            -left[i].dot(sparse.diags(sigma)).dot(right[i]) + jumpfactor * jumps[i]
+            -left[i] @ sparse.diags(sigma) @ right[i] + jumpfactor * jumps[i]
         )
     return matrix
