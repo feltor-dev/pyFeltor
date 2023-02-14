@@ -13,6 +13,7 @@ def test_grid():
     g2d = dg.Grid(x0=(0, 0), x1=(1, 1), n=(3, 3), N=(24, 24), bc=(dg.bc.PER, dg.bc.DIR))
     print(g2d.x0, g2d.x1, g2d.n, g2d.N, g2d.bc)
     assert g2d.ndim == 2
+    assert g2d.size() == 5184
 
 
 def test_creation():

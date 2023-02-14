@@ -75,7 +75,7 @@ def test_derivative():
     print("TEST 2D: DX, DY, JX, JY")
     for i in range(0, 4):
         error = sol2[i].copy()
-        error = -dg.dot( m2[i], f2d) + error
+        error = -m2[i].dot(f2d) + error
         norm = np.sqrt(np.sum(w2d * error**2))
         print(f"Absolute error to true solution: {norm}")
         assert norm == sol[i]

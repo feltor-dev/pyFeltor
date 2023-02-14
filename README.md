@@ -41,21 +41,17 @@ pytest-3 -s . # run all the unittests with output
 
 Generally, pyfeltor is built to mimic the `dg` library in feltor.
 There are a few things to consider
-- the vector class pyfeltor uses is the numpy array
+- pyfeltor uses 1d numpy arrays as its vector class
 - there is only one grid class `dg.Grid` that generalises `dg::Grid1d`,
   `dg::Grid2d` and `dg::Grid3d`
-- the evaluate function generates numpy arrays with 1d, 2d, 3d etc **shape**
-  (in contrast to C++ arrays that are just flat in memory)
-- the x dimension is the **last/rightmost** dimension
+- the evaluate function generates 1d (flat) numpy arrays that can be **reshaped**
+    to 1d, 2d, 3d structure using `reshape(grid.shape)`
+- the x dimension is the **last/rightmost** dimension (row-major/C-style layout)
 - the equivalent of the `dg::blas1` vector functions are just plain math
   operators with numpy arrays
 - the equivalent of `dg::blas1::dot` and `dg::blas2::dot` is `np.sum`
 - the derivative matrices are generated as `scipy.sparse` matrices
-- the equivalent of `dg::blas::symv` is `dg.dot`; the name comes from the scipy
-  version of matrix-vector multiplication and returns its result. The function is
-  just a wrapper around the sparse matrix dot function but flattens the input
-  and reshapes the output array (Directly applying m.dot( v) to a shaped numpy
-  vector won't work)
+- the equivalent of `dg::blas::symv` is the `dot` method of scipy.sparse matrices
 
 Here is how the grid generation, evaluation and integration works
 ```python
@@ -79,16 +75,17 @@ Here is an example of how to generate and use a derivative
 import numpy as np
 from pyfeltor import dg
 
+# !! The x dimension is the second one !!
 g2d = dg.Grid([0.1, 0], [2 * np.pi + 0.1, np.pi], [n, n], [Ny, Nx], [bcy, bcx])
 w2d = dg.create.weights(g2d)
 f2d = dg.evaluate(sine, g2d)
 x2d = dg.evaluate(cosx, g2d)
 
-# Remember that the x dimension is the rightmost
+# the x dimension is the rightmost (index 1)
 dx = dg.create.dx(1, g2d, g2d.bc[1], dg.direction.forward)
-# and the y dimension is the leftmost
+# and the y dimension is the leftmost (index 0)
 dy = dg.create.dx(0, g2d, g2d.bc[0], dg.direction.centered)
-error = dg.dot(dx,f2d) - x2d
+error = dx.dot(f2d) - x2d
 norm = np.sqrt(np.sum(w2d * error**2)) / np.sqrt(w2d * x2d ** 2)
 print(f"Relative error to true solution: {norm}")
 

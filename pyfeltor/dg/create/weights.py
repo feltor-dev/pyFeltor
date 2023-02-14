@@ -8,7 +8,7 @@ def weights(grid):
         (x, w) = np.polynomial.legendre.leggauss(grid.n[dim])
         wdim = np.tile(w, grid.N[dim]) * grid.h()[dim] / 2.0
         weights = np.kron(weights, wdim)
-        weights = np.reshape(weights, grid.size()[0 : dim + 1])
+        # weights = np.reshape(weights, grid.shape[0 : dim + 1])
     return weights
 
 
@@ -16,7 +16,7 @@ def abscissas(grid, dimension=0):
     """Create 1d dG abscissas on given grid for given dimension"""
     dim = dimension
     (x, w) = np.polynomial.legendre.leggauss(grid.n[dim])
-    abscissas = np.zeros(grid.size()[dim])
+    abscissas = np.zeros(grid.shape[dim])
     h = grid.h()[dim]
     x0 = grid.x0[dim]
     for i in range(0, grid.N[dim]):

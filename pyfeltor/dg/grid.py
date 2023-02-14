@@ -46,8 +46,8 @@ class Grid:
 
     @property
     def shape(self):
-        """Same as size: n*N """
-        return self.size()
+        """Shape of the grid : n*N"""
+        return self.n * self.N
 
     @n.setter
     def n(self, n):
@@ -75,6 +75,6 @@ class Grid:
     def h(self):
         return (self.x1 - self.x0) / self.N
 
-    # should this be named shape? (consistent with both feltor and numpy?)
-    def size(self):  # makes the shape of numpy arrays
-        return self.n * self.N
+    def size(self):
+        """The total number of points in the grid: np.prod(grid.shape)"""
+        return np.prod(self.shape)
