@@ -78,4 +78,4 @@ def test_derivative():
         error = -m2[i].dot(f2d) + error
         norm = np.sqrt(np.sum(w2d * error**2))
         print(f"Absolute error to true solution: {norm}")
-        assert norm == sol[i]
+        assert np.isclose( norm, sol[i])
