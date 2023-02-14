@@ -68,9 +68,10 @@ sol = np.exp(2)-np.exp(1)
 # the equivalent of dg::blas1::dot
 num = np.sum( weights*func)
 print( f"Correct integral is {sol} while numerical is {num}")
-
 ```
+
 Here is an example of how to generate and use a derivative
+
 ```python
 import numpy as np
 from pyfeltor import dg
@@ -88,7 +89,44 @@ dy = dg.create.dx(0, g2d, g2d.bc[0], dg.direction.centered)
 error = dx.dot(f2d) - x2d
 norm = np.sqrt(np.sum(w2d * error**2)) / np.sqrt(w2d * x2d ** 2)
 print(f"Relative error to true solution: {norm}")
+```
 
+The elliptic operator is a sparse matrix in pyfeltor (in contrast to a class) and can be created like so:
+```python
+from pyfeltor import dg
+import numpy as np
+import scipy.sparse.linalg
+import scipy.linalg
+
+amp = 0.9
+pol = lambda y, x: 1 + amp * np.sin(x) * np.sin(y)
+rhs = (
+    lambda y, x: 2.0 * np.sin(x) * np.sin(y) * (amp * np.sin(x) * np.sin(y) + 1)
+    - amp * np.sin(x) * np.sin(x) * np.cos(y) * np.cos(y)
+    - amp * np.cos(x) * np.cos(x) * np.sin(y) * np.sin(y)
+)
+sol = lambda y, x: np.sin(x) * np.sin(y)
+lx, ly = np.pi, 2 * np.pi
+bcx, bcy = dg.bc.DIR, dg.bc.PER
+n, Nx, Ny = 3, 64, 64
+grid = dg.Grid([0, 0], [ly, lx], [n, n], [Ny, Nx], [bcy, bcx])
+x = np.zeros(grid.size())
+b = dg.evaluate(rhs, grid)
+chi = dg.evaluate(pol, grid)
+solution = dg.evaluate(sol, grid)
+# here we assemble the dg elliptic operator as a sparse matrix
+pol_forward = dg.create.elliptic(
+    grid,
+    [bcy, bcx],
+    [dg.direction.forward, dg.direction.forward],
+    sigma=chi,
+    jumpfactor=1,
+)
+# use a direct solver to solve linear equation
+x = scipy.sparse.linalg.spsolve(pol_forward, b)
+
+w2d = dg.create.weights(grid)
+print("Distance to true solution is ", np.sqrt(np.sum(w2d * (x - solution) ** 2)))
 ```
 
 
