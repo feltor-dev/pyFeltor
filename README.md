@@ -1,5 +1,5 @@
 # pyFeltor
-An implementation of feltor's dg library in python
+An implementation of [feltor](https://github.com/feltor-dev/feltor)'s discontinuous Galerkin 'dg' library in python.
 
 [![LICENSE : MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -42,7 +42,8 @@ pytest-3 -s . # run all the unittests with output
 ## Usage
 
 Generally, pyfeltor is built to mimic the `dg` library in feltor.
-There are a few things to consider
+Consider
+
 - pyfeltor uses 1d numpy arrays as its vector class
 - there is only one grid class `dg.Grid` that generalises `dg::Grid1d`,
   `dg::Grid2d` and `dg::Grid3d`
@@ -56,8 +57,10 @@ There are a few things to consider
 - the equivalent of `dg::blas1::dot` and `dg::blas2::dot` is `np.sum`
 - the derivative matrices are generated as `scipy.sparse` matrices
 - the equivalent of `dg::blas::symv` is the `dot` method of scipy.sparse matrices
+- The elliptic operator is a sparse matrix in pyfeltor (in contrast to a class) and is created by a function
 
-Here is how the grid generation, evaluation and integration works
+### Grid generation, evaluation and integration
+
 ```python
 import numpy as np
 # import dg library
@@ -74,14 +77,14 @@ num = np.sum( weights*func)
 print( f"Correct integral is {sol} while numerical is {num}")
 ```
 
-Here is an example of how to generate and use a derivative
+### Generate and use a derivative
 
 ```python
 import numpy as np
 from pyfeltor import dg
 
 # !! The x dimension is the second one !!
-g2d = dg.Grid([0.1, 0], [2 * np.pi + 0.1, np.pi], [n, n], [Ny, Nx])
+g2d = dg.Grid(x0=[0.1, 0], x1=[2 * np.pi + 0.1, np.pi], n=[n, n], N=[Ny, Nx])
 w2d = dg.create.weights(g2d)
 f2d = dg.evaluate(sine, g2d)
 x2d = dg.evaluate(cosx, g2d)
@@ -95,7 +98,8 @@ norm = np.sqrt(np.sum(w2d * error**2)) / np.sqrt(w2d * x2d ** 2)
 print(f"Relative error to true solution: {norm}")
 ```
 
-The elliptic operator is a sparse matrix in pyfeltor (in contrast to a class) and can be created like so:
+### The elliptic operator
+
 ```python
 from pyfeltor import dg
 import numpy as np
@@ -132,7 +136,7 @@ x = scipy.sparse.linalg.spsolve(pol_forward, b)
 w2d = dg.create.weights(grid)
 print("Distance to true solution is ", np.sqrt(np.sum(w2d * (x - solution) ** 2)))
 ```
-Interpolation works just like in feltor by creating and applying an interpolation matrix
+### Interpolation
 
 ```python
 from pyfeltor import dg
