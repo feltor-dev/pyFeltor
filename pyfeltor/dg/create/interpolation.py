@@ -88,4 +88,4 @@ def interpolation(xs, grid, bcs):
                 vals.append(-V)
     # sort
     rows, cols, vals = zip(*sorted(zip(rows, cols, vals)))
-    return scipy.sparse.coo_matrix((vals, (rows, cols)))
+    return scipy.sparse.coo_matrix((vals, (rows, cols)), shape = (len(xs[0]),grid.size()))
