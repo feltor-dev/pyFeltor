@@ -2,6 +2,8 @@
 An implementation of feltor's dg library in python
 
 [![LICENSE : MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 
 ## Rationale
 
@@ -152,3 +154,11 @@ interE = dg.evaluate(lambda y, x: np.sin(x) * np.sin(y), equi)
 error = np.sum((inter - interE) ** 2) / np.sum(inter ** 2)
 print(f"Error is {np.sqrt(error)} (should be small)!")
 ```
+
+## Contributions
+
+Contributions are welcome.
+
+## Authors
+
+Matthias Wiesenberger
