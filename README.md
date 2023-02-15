@@ -21,12 +21,12 @@ unparallelized in python.
 ## Installation
 > You need python3 to install this module
 
-The simplest way is to install from the python package index [pypi](https://pypi.org/) via the package manager [pip](https://pip.pypa.io/en/stable/):
+The simplest way is to install from the python package index [pypi](https://pypi.org/) via the package manager [pip](https://pip.pypa.io/en/stable/) v23.0
 ```bash
 python3 -m pip install pyfeltor
 ```
 
-To install from github you have to clone the repository and then use the package manager [pip](https://pip.pypa.io/en/stable/).
+To install from github you have to clone the repository and then use the package manager [pip](https://pip.pypa.io/en/stable/) v23.0
 
 ```bash
 git clone https://github.com/feltor-dev/pyfeltor
