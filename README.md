@@ -130,5 +130,25 @@ x = scipy.sparse.linalg.spsolve(pol_forward, b)
 w2d = dg.create.weights(grid)
 print("Distance to true solution is ", np.sqrt(np.sum(w2d * (x - solution) ** 2)))
 ```
+Interpolation works just like in feltor by creating and applying an interpolation matrix
 
+```python
+from pyfeltor import dg
+import numpy as np
+print("2D INTERPOLATION TEST")
 
+n, Nx, Ny = 3, 32, 32
+g = dg.Grid(x0=[-5 * np.pi, -np.pi], x1=[-4 * np.pi, 0], n=[n, n], N=[Ny, Nx])
+equi = dg.Grid(
+    x0=[-5 * np.pi, -np.pi], x1=[-4 * np.pi, 0], n=[1, 1], N=[n * Ny, n * Nx]
+)
+y = dg.evaluate(lambda y, x: y, equi)
+x = dg.evaluate(lambda y, x: x, equi)
+
+interp = dg.create.interpolation([y, x], g, [dg.bc.DIR, dg.bc.DIR])
+vec = dg.evaluate(lambda y, x: np.sin(x) * np.sin(y), g)
+inter = interp.dot(vec)
+interE = dg.evaluate(lambda y, x: np.sin(x) * np.sin(y), equi)
+error = np.sum((inter - interE) ** 2) / np.sum(inter ** 2)
+print(f"Error is {np.sqrt(error)} (should be small)!")
+```
