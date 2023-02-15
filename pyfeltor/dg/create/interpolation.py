@@ -68,9 +68,11 @@ def interpolation(xs, grid, bcs):
         elif grid.ndim == 2:
             tuples = itertools.product(range(0, grid.n[0]), range(0, grid.n[1]))
         elif grid.ndim == 3:
-            tuples = itertools.product(range(0, grid.n[0]), range(0, grid.n[1]), range(0, grid.n[2]))
+            tuples = itertools.product(
+                range(0, grid.n[0]), range(0, grid.n[1]), range(0, grid.n[2])
+            )
         else:
-            raise Exception( "interpolation not implemented for ndim > 3")
+            raise Exception("interpolation not implemented for ndim > 3")
         for it in tuples:
             I = 0  # the index to push back
             V = 1  # the value to push back

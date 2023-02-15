@@ -27,9 +27,9 @@ def test_evaluation():
     y = dg.evaluate(lambda z, y, x: y, equi)
     x = dg.evaluate(lambda z, y, x: x, equi)
     print("Length of arrays", len(z), len(y), len(x))
-    assert (len(z) == equi.size())
-    assert (len(y) == equi.size())
-    assert (len(x) == equi.size())
+    assert len(z) == equi.size()
+    assert len(y) == equi.size()
+    assert len(x) == equi.size()
 
 
 def test_integration():
@@ -37,7 +37,7 @@ def test_integration():
     Nx = 12
     Ny = 28
     Nz = 100
-    g1d = dg.Grid([1], [2], [n], [Nx])
+    g1d = dg.Grid(x0=1, x1=2, n=n, N=Nx)
     g2d = dg.Grid((0, 0), (2 * np.pi, 2 * np.pi), (n, n), (Ny, Nx))
     w1d = dg.create.weights(g1d)
     w2d = dg.create.weights(g2d)
@@ -56,20 +56,22 @@ def test_integration():
 
 
 def test_integrate():
-    print( "TEST OF dg.integrate")
-    g1d = dg.Grid( [1], [2], [3], [12])
+    print("TEST OF dg.integrate")
+    g1d = dg.Grid([1], [2], [3], [12])
     w1d = dg.create.weights(g1d)
-    integral_num = dg.integrate( dg.evaluate( lambda x:np.cos(x), g1d), g1d,
-            dg.direction.forward)
-    integral_ana = dg.evaluate( lambda x : np.sin(x), g1d) - np.sin( g1d.x0[0])
+    integral_num = dg.integrate(
+        dg.evaluate(lambda x: np.cos(x), g1d), g1d, dg.direction.forward
+    )
+    integral_ana = dg.evaluate(lambda x: np.sin(x), g1d) - np.sin(g1d.x0[0])
     error = integral_ana - integral_num
-    norm = np.sum( w1d*error**2)
-    print(" Error norm of  1d integral function (forward) ",norm)
-    assert np.isclose( norm , 0)
-    integral_num = dg.integrate( dg.evaluate( lambda x:np.cos(x), g1d), g1d,
-            dg.direction.backward)
-    integral_ana = dg.evaluate( lambda x : np.sin(x), g1d) - np.sin( g1d.x1[0])
+    norm = np.sum(w1d * error ** 2)
+    print(" Error norm of  1d integral function (forward) ", norm)
+    assert np.isclose(norm, 0)
+    integral_num = dg.integrate(
+        dg.evaluate(lambda x: np.cos(x), g1d), g1d, dg.direction.backward
+    )
+    integral_ana = dg.evaluate(lambda x: np.sin(x), g1d) - np.sin(g1d.x1[0])
     error = integral_ana - integral_num
-    norm = np.sum( w1d*error**2)
-    print(" Error norm of  1d integral function (backward) ",norm)
-    assert np.isclose( norm , 0)
+    norm = np.sum(w1d * error ** 2)
+    print(" Error norm of  1d integral function (backward) ", norm)
+    assert np.isclose(norm, 0)

@@ -34,9 +34,9 @@ def test_elliptic():
     error = pol_forward.dot(solution) - b
     print(
         "Direct application of laplace to solution is",
-        np.sqrt(np.sum(w2d * error**2)),
+        np.sqrt(np.sum(w2d * error ** 2)),
     )
-    assert np.isclose(np.sqrt(np.sum(w2d * error**2)), 0.07475654581481737)
+    assert np.isclose(np.sqrt(np.sum(w2d * error ** 2)), 0.07475654581481737)
     x = scipy.sparse.linalg.spsolve(pol_forward, b)
 
     print("Distance to true solution is ", np.sqrt(np.sum(w2d * (x - solution) ** 2)))
@@ -54,4 +54,4 @@ def test_elliptic1d():
         grid1d, [dg.bc.DIR], [dg.direction.backward], sigma=chi, jumpfactor=1
     )
     x = pol_backward.dot(solution1d) - b
-    assert np.isclose(np.sqrt(np.sum(w1d * x**2)), 0.28502509566157097)
+    assert np.isclose(np.sqrt(np.sum(w1d * x ** 2)), 0.28502509566157097)

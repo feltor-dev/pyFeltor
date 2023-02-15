@@ -6,7 +6,7 @@ def test_interpolation1d():
     print("1D INTERPOLATION TEST")
     passed = True
     n, Nx = 3, 9
-    g1d = dg.Grid([-np.pi], [0], [n], [Nx])
+    g1d = dg.Grid(-np.pi, 0, n, Nx)
     field = dg.evaluate(lambda x: x, g1d)
     x = [(i + 0.5) * g1d.h()[0] / g1d.n[0] for i in range(0, g1d.size())]
 

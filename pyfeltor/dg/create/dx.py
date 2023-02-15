@@ -13,7 +13,7 @@ def symm(n, N, h, bcx):
     t = ops.pipj_inv(n)
     t *= 2.0 / h
 
-    a = 1.0 / 2.0 * t @ ( d - d.transpose()) # @ is matrix multiplication
+    a = 1.0 / 2.0 * t @ (d - d.transpose())  # @ is matrix multiplication
     # bcx = PER
     a_bound_right = a.copy()
     a_bound_left = a.copy()
@@ -107,7 +107,7 @@ def plus(n, N, h, bcx):
     t = ops.pipj_inv(n)
     t *= 2.0 / h
 
-    a = t @ ( -l - d.transpose())
+    a = t @ (-l - d.transpose())
     # bcx = PER
     a_bound_left = a.copy()  # PER, NEU, and NEU_DIR
     a_bound_right = a.copy()  # PER, DIR, and NEU_DIR

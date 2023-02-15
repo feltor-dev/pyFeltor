@@ -63,18 +63,19 @@ Consider
 
 ```python
 import numpy as np
+
 # import dg library
 from pyfeltor import dg
 
 n, Nx = 3, 12
-grid = dg.Grid( [1],[2],[n], [Nx])
-weights = dg.create.weights( grid)
-func = dg.evaluate( lambda x : np.exp(x), grid)
+grid = dg.Grid(x0=1, x1=2, n=n, N=Nx)
+weights = dg.create.weights(grid)
+func = dg.evaluate(lambda x: np.exp(x), grid)
 
-sol = np.exp(2)-np.exp(1)
+sol = np.exp(2) - np.exp(1)
 # the equivalent of dg::blas1::dot
-num = np.sum( weights*func)
-print( f"Correct integral is {sol} while numerical is {num}")
+num = np.sum(weights * func)
+print(f"Correct integral is {sol} while numerical is {num}")
 ```
 
 ### Generate and use a derivative
@@ -84,17 +85,18 @@ import numpy as np
 from pyfeltor import dg
 
 # !! The x dimension is the second one !!
+n, Nx, Ny = 3, 12, 24
 g2d = dg.Grid(x0=[0.1, 0], x1=[2 * np.pi + 0.1, np.pi], n=[n, n], N=[Ny, Nx])
 w2d = dg.create.weights(g2d)
-f2d = dg.evaluate(sine, g2d)
-x2d = dg.evaluate(cosx, g2d)
+f2d = dg.evaluate(lambda y, x: np.sin(x) * np.sin(y), g2d)
+x2d = dg.evaluate(lambda y, x: np.cos(x) * np.sin(y), g2d)
 
 # the x dimension is the rightmost (index 1)
-dx = dg.create.dx(1, g2d, bcx, dg.direction.forward)
+dx = dg.create.dx(1, g2d, dg.bc.DIR, dg.direction.forward)
 # and the y dimension is the leftmost (index 0)
-dy = dg.create.dx(0, g2d, bcy, dg.direction.centered)
+dy = dg.create.dx(0, g2d, dg.bc.PER, dg.direction.centered)
 error = dx.dot(f2d) - x2d
-norm = np.sqrt(np.sum(w2d * error**2)) / np.sqrt(w2d * x2d ** 2)
+norm = np.sqrt(np.sum(w2d * error ** 2)) / np.sqrt(w2d * x2d ** 2)
 print(f"Relative error to true solution: {norm}")
 ```
 
@@ -141,6 +143,7 @@ print("Distance to true solution is ", np.sqrt(np.sum(w2d * (x - solution) ** 2)
 ```python
 from pyfeltor import dg
 import numpy as np
+
 print("2D INTERPOLATION TEST")
 
 n, Nx, Ny = 3, 32, 32

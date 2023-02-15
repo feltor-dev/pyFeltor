@@ -21,36 +21,42 @@ def cosy(y, x):
     return np.cos(y) * np.sin(x)
 
 
-def test_dx( ):
+def test_dx():
     n, N = 3, 20
-    gPER = dg.Grid( [0.1], [2*np.pi+0.1], [n], [N])
-    gDIR = dg.Grid( [0], [np.pi], [n], [N])
-    gNEU = dg.Grid( [np.pi/2.], [3*np.pi/2.], [n], [N])
-    gDIR_NEU = dg.Grid( [0], [np.pi/2.], [n], [N])
-    gNEU_DIR = dg.Grid( [np.pi/2.], [np.pi], [n], [N])
+    gPER = dg.Grid(0.1, 2 * np.pi + 0.1, n, N)
+    gDIR = dg.Grid(0, np.pi, n, N)
+    gNEU = dg.Grid(np.pi / 2.0, 3 * np.pi / 2.0, n, N)
+    gDIR_NEU = dg.Grid(0, np.pi / 2.0, n, N)
+    gNEU_DIR = dg.Grid(np.pi / 2.0, np.pi, n, N)
     g = [gPER, gDIR, gNEU, gDIR_NEU, gNEU_DIR]
     bcx = [dg.bc.PER, dg.bc.DIR, dg.bc.NEU, dg.bc.DIR_NEU, dg.bc.NEU_DIR]
     print("TEST NORMAL TOPOLOGY: YOU SHOULD SEE CONVERGENCE FOR ALL OUTPUTS!!!")
     print("COMPARE TO dx_t.cu")
-    for (g,bcx) in zip(g,bcx):
-        print( "Boundary condition ", bcx)
-        hs = dg.create.dx( 0, g, bcx, dg.direction.centered);
-        hf = dg.create.dx( 0, g, bcx, dg.direction.forward);
-        hb = dg.create.dx( 0, g, bcx, dg.direction.backward);
-        js = dg.create.jump( 0, g, bcx);
-        func = dg.evaluate( lambda x : np.sin(x), g);
-        error = func;
-        w1d = dg.create.weights( g);
-        deri = dg.evaluate( lambda x : np.cos(x), g);
-        null = dg.evaluate( lambda x: 0, g);
+    for (g, bcx) in zip(g, bcx):
+        print("Boundary condition ", bcx)
+        hs = dg.create.dx(0, g, bcx, dg.direction.centered)
+        hf = dg.create.dx(0, g, bcx, dg.direction.forward)
+        hb = dg.create.dx(0, g, bcx, dg.direction.backward)
+        js = dg.create.jump(0, g, bcx)
+        func = dg.evaluate(lambda x: np.sin(x), g)
+        error = func
+        w1d = dg.create.weights(g)
+        deri = dg.evaluate(lambda x: np.cos(x), g)
+        null = dg.evaluate(lambda x: 0, g)
         error = deri - hs.dot(func)
-        print( f"Distance to true solution (symmetric): {np.sqrt(np.sum( w1d*error**2) )}")
+        print(
+            f"Distance to true solution (symmetric): {np.sqrt(np.sum( w1d*error**2) )}"
+        )
         error = deri - hf.dot(func)
-        print( f"Distance to true solution (forward): {np.sqrt(np.sum( w1d*error**2) )}")
+        print(f"Distance to true solution (forward): {np.sqrt(np.sum( w1d*error**2) )}")
         error = deri - hb.dot(func)
-        print( f"Distance to true solution (backward): {np.sqrt(np.sum( w1d*error**2) )}")
+        print(
+            f"Distance to true solution (backward): {np.sqrt(np.sum( w1d*error**2) )}"
+        )
         error = null - js.dot(func)
-        print( f"Distance to true solution (jump     ): {np.sqrt(np.sum( w1d*error**2) )}")
+        print(
+            f"Distance to true solution (jump     ): {np.sqrt(np.sum( w1d*error**2) )}"
+        )
 
 
 def test_derivative():
@@ -71,12 +77,17 @@ def test_derivative():
     null2 = dg.evaluate(zero, g2d)
     sol2 = [dx2d, dy2d, null2, null2]
     # binary2[4562611930300281864,4553674328256556132,4567083257206218817,4574111364446550002]
-    sol = [0.0010775034079703078,0.00027314872436790867,0.0021410107540649087,0.006471682818855125]
+    sol = [
+        0.0010775034079703078,
+        0.00027314872436790867,
+        0.0021410107540649087,
+        0.006471682818855125,
+    ]
 
     print("TEST 2D: DX, DY, JX, JY")
     for i in range(0, 4):
         error = sol2[i].copy()
         error = -m2[i].dot(f2d) + error
-        norm = np.sqrt(np.sum(w2d * error**2))
+        norm = np.sqrt(np.sum(w2d * error ** 2))
         print(f"Absolute error to true solution: {norm}")
-        assert np.isclose( norm, sol[i])
+        assert np.isclose(norm, sol[i])
