@@ -246,31 +246,6 @@ def minus(n, N, h, bcx):
     return scipy.sparse.coo_matrix((vals, (rows, cols)))
 
 
-def naive(n, N, h):
-    d = ops.pidxpj(n)
-    t = ops.pipj_inv(n)
-    t *= 2.0 / h
-    a = t @ d
-    # transform to XSPACE
-    backward = ops.backward(n)
-    forward = ops.forward(n)
-    a = (backward @ a) @ forward
-
-    # assemble the matrix
-    rows = []
-    cols = []
-    vals = []
-    for k in range(0, N):
-        for i in range(0, n):
-            for j in range(0, n):
-                rows.append(k * n + i)
-                cols.append((k * n + j) % (n * N))
-                vals.append(a[i, j])
-    # sort
-    rows, cols, vals = zip(*sorted(zip(rows, cols, vals)))
-    return scipy.sparse.coo_matrix((vals, (rows, cols)))
-
-
 def jump_normed(n, N, h, bcx):
     l = ops.lilj(n)
     r = ops.rirj(n)
@@ -360,8 +335,6 @@ def jump_normed(n, N, h, bcx):
 def normed(n, N, h, bcx, direction):
     if direction == direction.centered:
         return symm(n, N, h, bcx)
-    elif direction == direction.none:
-        return naive(n, N, h)
     elif direction == direction.forward:
         return plus(n, N, h, bcx)
     elif direction == direction.backward:

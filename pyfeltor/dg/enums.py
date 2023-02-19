@@ -23,16 +23,13 @@ def inverse_bc(bound):
 
 
 class direction(Enum):
-    none = (0,)
-    forward = (1,)
-    backward = (2,)
-    centered = 3
+    forward = (0,)
+    backward = (1,)
+    centered = 2
 
 
 def inverse_dir(direct):
     """return the inverse direction"""
-    if direct == direction.none:
-        return direction.none
     if direct == direction.forward:
         return direction.backward
     if direct == direction.backward:
