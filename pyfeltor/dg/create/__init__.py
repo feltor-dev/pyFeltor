@@ -4,4 +4,4 @@
 from .weights import weights, abscissas
 from .derivative import dx, jump
 from .elliptic import elliptic
-from .interpolation import interpolation
+from .interpolation import interpolation, projection

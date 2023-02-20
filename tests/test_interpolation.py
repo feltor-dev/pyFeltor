@@ -69,3 +69,19 @@ def test_interpolation3d():
     )
     print("Pointwise error ", inter[0:10] - solution)
     assert np.allclose(inter[0:10], solution)
+
+
+def test_projection():
+    print("2D PROJECTION TEST")
+
+    n, Nx, Ny = 3, 8, 8
+    g = dg.Grid(x0=[-5 * np.pi, -np.pi], x1=[-4 * np.pi, 0], n=[n, n], N=[Ny, Nx])
+    g_fine = dg.Grid( x0=g.x0, x1=g.x1, n=g.n, N=[n * Ny, n * Nx])
+
+    project = dg.create.projection( g, g_fine)
+    vec = dg.evaluate(lambda y, x: np.sin(x) * np.sin(y), g_fine)
+    project = project.dot(vec)
+    projectE = dg.evaluate(lambda y, x: np.sin(x) * np.sin(y), g)
+    error = np.sum((project - projectE) ** 2) / np.sum(project ** 2)
+    print(f"Error is {np.sqrt(error)} (should be small)!")
+    assert np.isclose(np.sqrt(error), 0, atol=1e-5)
