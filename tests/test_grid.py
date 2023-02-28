@@ -29,3 +29,16 @@ def test_evaluation():
     weights = dg.create.weights(grid)
     sine = dg.evaluate(lambda y, x: np.sin(y) * np.sin(x), grid)
     print(f"Integral is {np.sum( sine*weights)}")
+
+def test_grid_from_abscissas():
+    print("TEST REVERSE GRID ENGINEER")
+    grid = dg.Grid(x0=(-10, 0, 20,-10,0,20), x1=(2*np.pi, np.pi, 10*np.pi,2*np.pi, np.pi, 10*np.pi), n=(1, 2, 3,4,5,6), N=(20, 24, 12,13,15,16))
+    xs = [dg.create.abscissas(grid,i) for i in range(0,grid.ndim)]
+    test_grid = dg.create.grid_from_abscissas( xs)
+
+    print( grid.x0, grid.x1, grid.n, grid.N)
+    print( test_grid.x0, test_grid.x1, test_grid.n, test_grid.N)
+    assert np.allclose( grid.x0, test_grid.x0)
+    assert np.allclose( grid.x1, test_grid.x1)
+    assert np.allclose( grid.n, test_grid.n)
+    assert np.allclose( grid.N, test_grid.N)
