@@ -1,4 +1,5 @@
 import pytest
+import json
 import numpy as np
 import magneticfielddb as magdb
 from pyfeltor import dg
@@ -6,9 +7,7 @@ from pyfeltor import dg
 geo_loaded = True
 try:
     from pyfeltor.dg import geo
-    print( "succsful")
 except ImportError:
-    print( "Not succsful")
     geo_loaded = False
 
 
@@ -22,42 +21,51 @@ def geo_exists():
 
 def test_polynomial():
     if not geo_exists(): return
-    print( "hello world")
     c = np.array( [1,2,3,4])
     params = {"R_0" : 400, "inverseaspectratio" : 20, "elongation" : 1, "triangularity" : 1,
               "PP" : 1, "PI" : 1, "description" : "standardX", "M" : 2, "N" : 2, "c" : c.tolist()}
     pp = dg.geo.polynomial.Parameters(params)
     psip = dg.geo.polynomial.Psip( pp)
-    Rs = np.full( 100, 200)
-    Zs = np.full( 100, 3)
-    print( psip( Rs,Zs))
+    grid = dg.Grid( x0 = (pp.R_0-pp.a, -pp.a), x1 = (pp.R_0+pp.a, pp.a), n=(3,3), N=(24, 24))
+    psi = dg.evaluate( psip, grid)
+    R = dg.evaluate( lambda R, Z: R, grid)
+    Z = dg.evaluate( lambda R, Z: Z, grid)
+    psi_ = psip(R,Z)
+    print( psi)
+    print( psi_)
 
 
 def test_make_field():
     if not geo_exists(): return
-    print( "hello world")
-    magparams = magdb.select( "COMPASS/compass_1X.json")
-    print(magparams)
-    magpara = dg.geo.createMagneticField( magparams)
-    Rs = np.full( 100, 0.500)
-    Zs = np.full( 100, 0)
-    print( magpara.R0())
-    print( magpara.psip()( Rs,Zs))
+    with open ("geometry_params_Xpoint.json", "r") as f:
+        magparams = json.load(f)
+    mag = dg.geo.createMagneticField( magparams)
+    a = mag.params().a()
+    R0 = mag.R0()
+    grid = dg.Grid(x0=(R0-a, -a), x1=(R0+a, +a), n=(3, 3), N=(24, 24))
+    psi = dg.evaluate( mag.psip(), grid)
+    BR  = dg.evaluate( dg.geo.BFieldR(mag), grid)
+    print( mag.R0())
+    print( mag.params().a())
+    print( mag.params().elongation())
+    print( mag.params().getDescription())
+    print( mag.params().getEquilibrium())
+    print (psi, BR)
+
 
 
 def test_q_profile():
     if not geo_exists(): return
     #magparams = magdb.select( "COMPASS/compass_1X.json")
-    magparams = magdb.select( "TCV/eq_TCV_76186.json")
+    with open ("enrx_tcv.json", "r") as f:
+        magparams = json.load(f)
     mag = dg.geo.createMagneticField(magparams)
     qfunctor = dg.geo.SafetyFactor(mag)
-    RO  = mag.R0()
-    ZO = 0
+    RO,ZO  = mag.R0(), 0
     (point, RO, ZO) = dg.geo.findOpoint(mag.get_psip(), RO, ZO)
+    print( "O-point found at ", RO, ZO)
     psipO = mag.psip()(RO,ZO)
     psi_values = np.linspace( psipO, 0, 20, endpoint = False)
-    print(psipO)
-    #print(qfunctor(psipO+1e-09))
     print(qfunctor(psi_values))
 
 

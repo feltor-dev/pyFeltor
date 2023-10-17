@@ -1,0 +1,7 @@
+{
+    "equilibrium" : "guenter",
+    "description" : "square",
+    "I_0" : 10.0,
+    "R_0" : 3.0,
+    "comment" : "Sine functions; Guenter et al, J. Comput. Phys. 209 (2005) 354"
+}
