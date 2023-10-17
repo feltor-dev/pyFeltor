@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-import magneticfielddb as mag
+import magneticfielddb as magdb
 from pyfeltor import dg
 
 # Run with pytest-3 -s . to see stdout output
@@ -19,11 +19,27 @@ def test_polynomial():
 
 def test_make_field():
     print( "hello world")
-    magparams = mag.select( "COMPASS/compass_1X.json")
+    magparams = magdb.select( "COMPASS/compass_1X.json")
     print(magparams)
     magpara = dg.geo.createMagneticField( magparams)
     Rs = np.full( 100, 0.500)
     Zs = np.full( 100, 0)
     print( magpara.R0())
     print( magpara.psip()( Rs,Zs))
+
+
+def test_q_profile():
+    #magparams = magdb.select( "COMPASS/compass_1X.json")
+    magparams = magdb.select( "TCV/eq_TCV_76186.json")
+    mag = dg.geo.createMagneticField(magparams)
+    qfunctor = dg.geo.SafetyFactor(mag)
+    RO  = mag.R0()
+    ZO = 0
+    (point, RO, ZO) = dg.geo.findOpoint(mag.get_psip(), RO, ZO)
+    psipO = mag.psip()(RO,ZO)
+    psi_values = np.linspace( psipO, 0, 20, endpoint = False)
+    print(psipO)
+    #print(qfunctor(psipO+1e-09))
+    print(qfunctor(psi_values))
+
 

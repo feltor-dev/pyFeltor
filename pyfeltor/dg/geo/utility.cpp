@@ -46,6 +46,11 @@ PYBIND11_MODULE(utility, m) {
         .def( "div", &dg::geo::CylindricalVectorLvl1::div)
         .def( "divvvz", &dg::geo::CylindricalVectorLvl1::divvvz)
         ;
+    py::class_<dg::geo::SafetyFactor>(m,"SafetyFactor")
+        .def( py::init<const dg::geo::TokamakMagneticField&>())
+        .def( "__call__",  py::vectorize([]( dg::geo::SafetyFactor& my,
+                        double psip0) { return my(psip0);}))
+        ;
     // unfortunately floats are immutable in python (see pybind FAQ) we work-around with tuples:
     m.def( "findCriticalpoint", []( const dg::geo::CylindricalFunctorsLvl2& psi, double RC, double ZC)
             {
