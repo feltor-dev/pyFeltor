@@ -33,4 +33,20 @@ PYBIND11_MODULE(mod, m) { // name of the python module, not the C++ file
                         double R, double Z){ return my(R,Z);}))
         ;
     m.def( "createPsip", &dg::geo::mod::createPsip);
+    py::class_<poly::SetCompose>(m,"SetCompose")
+        .def( "__call__", py::vectorize([]( poly::SetCompose& my,
+                        double R, double Z){ return my(R,Z);}))
+        ;
+    py::class_<poly::SetUnion>(m,"SetUnion")
+        .def( "__call__", py::vectorize([]( poly::SetUnion& my,
+                        double R, double Z){ return my(R,Z);}))
+        ;
+    py::class_<poly::SetIntersection>(m,"SetIntersection")
+        .def( "__call__", py::vectorize([]( poly::SetIntersection& my,
+                        double R, double Z){ return my(R,Z);}))
+        ;
+    py::class_<poly::SetNot>(m,"SetNot")
+        .def( "__call__", py::vectorize([]( poly::SetNot& my,
+                        double R, double Z){ return my(R,Z);}))
+        ;
 }

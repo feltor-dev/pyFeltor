@@ -209,5 +209,46 @@ PYBIND11_MODULE(geometries, m) { // name of the python module, not the C++ file
         .def(py::init<const dg::geo::TokamakMagneticField&>())
         .def( "__call__", py::vectorize([]( dg::geo::Hoo& my,
                         double R, double Z){ return my(R,Z);}));
+    m.def( "createBHat", &dg::geo::createBHat);
+    m.def( "createCurvatureKappa", &dg::geo::createCurvatureKappa);
+    m.def( "createCurvatureNablaB", &dg::geo::createCurvatureNablaB);
+    m.def( "createEPhi", &dg::geo::createEPhi);
+    m.def( "createGradPsip", &dg::geo::createGradPsip);
+    m.def( "createTrueCurvatureKappa", &dg::geo::createTrueCurvatureKappa);
+    m.def( "createTrueCurvatureNablaB", &dg::geo::createTrueCurvatureNablaB);
+    py::class_<dg::geo::NablaPsiInv>(m,"NablaPsiInv")
+        .def(py::init<const dg::geo::CylindricalFunctorsLvl1&>())
+        .def( "__call__", py::vectorize([]( dg::geo::NablaPsiInv& my,
+                        double R, double Z){ return my(R,Z);}));
+    py::class_<dg::geo::NablaPsiInvX>(m,"NablaPsiInvX")
+        .def(py::init<const dg::geo::CylindricalFunctorsLvl2&>())
+        .def( "__call__", py::vectorize([]( dg::geo::NablaPsiInvX& my,
+                        double R, double Z){ return my(R,Z);}));
+    py::class_<dg::geo::NablaPsiInvY>(m,"NablaPsiInvY")
+        .def(py::init<const dg::geo::CylindricalFunctorsLvl2&>())
+        .def( "__call__", py::vectorize([]( dg::geo::NablaPsiInvY& my,
+                        double R, double Z){ return my(R,Z);}));
+    py::class_<dg::geo::Liseikin_XX>(m,"Liseikin_XX")
+        .def(py::init<const dg::geo::CylindricalFunctorsLvl1&,double,double>())
+        .def( "__call__", py::vectorize([]( dg::geo::Liseikin_XX& my,
+                        double R, double Z){ return my(R,Z);}));
+    py::class_<dg::geo::Liseikin_XY>(m,"Liseikin_XY")
+        .def(py::init<const dg::geo::CylindricalFunctorsLvl1&,double,double>())
+        .def( "__call__", py::vectorize([]( dg::geo::Liseikin_XY& my,
+                        double R, double Z){ return my(R,Z);}));
+    py::class_<dg::geo::Liseikin_YY>(m,"Liseikin_YY")
+        .def(py::init<const dg::geo::CylindricalFunctorsLvl1&,double,double>())
+        .def( "__call__", py::vectorize([]( dg::geo::Liseikin_YY& my,
+                        double R, double Z){ return my(R,Z);}));
+    py::class_<dg::geo::DivLiseikinX>(m,"DivLiseikinX")
+        .def(py::init<const dg::geo::CylindricalFunctorsLvl2&,double,double>())
+        .def( "__call__", py::vectorize([]( dg::geo::DivLiseikinX& my,
+                        double R, double Z){ return my(R,Z);}));
+    py::class_<dg::geo::DivLiseikinY>(m,"DivLiseikinY")
+        .def(py::init<const dg::geo::CylindricalFunctorsLvl2&,double,double>())
+        .def( "__call__", py::vectorize([]( dg::geo::DivLiseikinY& my,
+                        double R, double Z){ return my(R,Z);}));
+    m.def( "make_NablaPsiInvCollective",&dg::geo::make_NablaPsiInvCollective);
+    m.def( "make_LiseikinCollective",&dg::geo::make_LiseikinCollective);
 
 }

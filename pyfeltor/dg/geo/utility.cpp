@@ -14,6 +14,14 @@ PYBIND11_MODULE(utility, m) {
         .def( "__call__", py::vectorize([]( dg::geo::CylindricalFunctor& my,
                         double R, double Z){ return my(R,Z);}))
         ;
+    py::class_<dg::geo::Constant>(m,"Constant")
+        .def(py::init<double>())
+        .def( "__call__", py::vectorize([]( dg::geo::Constant& my,
+                        double R, double Z){ return my(R,Z);}));
+    py::class_<dg::geo::ZCutter>(m,"ZCutter")
+        .def(py::init<double,int>())
+        .def( "__call__", py::vectorize([]( dg::geo::ZCutter& my,
+                        double R, double Z){ return my(R,Z);}));
     py::class_<dg::geo::CylindricalFunctorsLvl1>(m,"CylindricalFunctorsLvl1")
         .def( "f", &dg::geo::CylindricalFunctorsLvl1::f)
         .def( "dfx", &dg::geo::CylindricalFunctorsLvl1::dfx)
@@ -46,6 +54,14 @@ PYBIND11_MODULE(utility, m) {
         .def( "div", &dg::geo::CylindricalVectorLvl1::div)
         .def( "divvvz", &dg::geo::CylindricalVectorLvl1::divvvz)
         ;
+    py::class_<dg::geo::ScalarProduct>(m,"ScalarProduct")
+        .def(py::init<dg::geo::CylindricalVectorLvl0,dg::geo::CylindricalVectorLvl0>())
+        .def( "__call__", py::vectorize([]( dg::geo::ScalarProduct& my,
+                        double R, double Z){ return my(R,Z);}));
+    py::class_<dg::geo::SquareNorm>(m,"SquareNorm")
+        .def(py::init<dg::geo::CylindricalVectorLvl0,dg::geo::CylindricalVectorLvl0>())
+        .def( "__call__", py::vectorize([]( dg::geo::SquareNorm& my,
+                        double R, double Z){ return my(R,Z);}));
     py::class_<dg::geo::SafetyFactor>(m,"SafetyFactor")
         .def( py::init<const dg::geo::TokamakMagneticField&>())
         .def( "__call__",  py::vectorize([]( dg::geo::SafetyFactor& my,
