@@ -47,11 +47,12 @@ pytest-3 -s . # run all the unittests with output
 
 ### The pyfeltor.dg.geo module
 Currently, the only way to install this module is via a local, editable install.
-Assuming that the pyfeltor.dg module was succesfully installed, the
+Assuming that the pyfeltor.dg module was succesfully installed this way, the
 first step is to also install [feltor](https://github.com/feltor-dev/feltor)
 following the quick start guide for a base installation.
-Second, instead of jsoncpp we here use the nlohmann/json parser available either
-as a system package `nlohmann-json3-dev` or on [GitHub](https://github.com/nlohmann/json).
+Second, instead of jsoncpp we here use the
+[nlohmann/json](https://github.com/nlohmann/json) parser available either as a
+system package `nlohmann-json3-dev`.
 Next, we follow the first steps guide on [pybind11](https://github.com/pybind11/pybind11)
 and install it via `python3 -m pip install pybind11`.
 Further, we install the `pybind11-dev` and the `pybind11-json-dev` packages for
@@ -223,9 +224,9 @@ psip = dg.geo.polynomial.Psip(pp)
 grid = dg.Grid( x0 = (pp.R_0-pp.a, -pp.a), x1 = (pp.R_0+pp.a, pp.a), n=(3,3), N=(24, 24))
 psi = dg.evaluate( psip, grid)
 ```
-In the
-[magneticfieldb](https://github.com/feltor-dev/magneticfielddb/polynomial_fit.ipynb)
-you can see the polynomial flux function being fitted to an experimental field.
+As an application in
+[magneticfieldb](https://github.com/feltor-dev/magneticfielddb)
+you can see a polynomial flux function being fitted to an experimental field.
 
 ### Generating the magnetic field and magnetic field functions
 In this second example we look how we can use a json magnetic field
