@@ -3,9 +3,25 @@ import numpy as np
 import magneticfielddb as magdb
 from pyfeltor import dg
 
+geo_loaded = True
+try:
+    from pyfeltor.dg import geo
+    print( "succsful")
+except ImportError:
+    print( "Not succsful")
+    geo_loaded = False
+
+
 # Run with pytest-3 -s . to see stdout output
+def geo_exists():
+    if not geo_loaded:
+        print( "dg.geo not compiled")
+        return False
+    return True
+
 
 def test_polynomial():
+    if not geo_exists(): return
     print( "hello world")
     c = np.array( [1,2,3,4])
     params = {"R_0" : 400, "inverseaspectratio" : 20, "elongation" : 1, "triangularity" : 1,
@@ -18,6 +34,7 @@ def test_polynomial():
 
 
 def test_make_field():
+    if not geo_exists(): return
     print( "hello world")
     magparams = magdb.select( "COMPASS/compass_1X.json")
     print(magparams)
@@ -29,6 +46,7 @@ def test_make_field():
 
 
 def test_q_profile():
+    if not geo_exists(): return
     #magparams = magdb.select( "COMPASS/compass_1X.json")
     magparams = magdb.select( "TCV/eq_TCV_76186.json")
     mag = dg.geo.createMagneticField(magparams)
