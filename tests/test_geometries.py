@@ -68,4 +68,22 @@ def test_q_profile():
     psi_values = np.linspace( psipO, 0, 20, endpoint = False)
     print(qfunctor(psi_values))
 
+def test_sheath():
+    if not geo_exists(): return
+    with open ("enrx_tcv.json", "r") as f:
+        magparams = json.load(f)
+    mag = dg.geo.createMagneticField(magparams)
+    wall = {"type" : "sol_pfr", "alpha": [0.05,0.05], "boundary" : [1.09,0.97]}
+    sheath= {"boundary" : 3/32, "alpha" : 2/32}
+    wall_f = dg.geo.CylindricalFunctor()
+    transition_f = dg.geo.CylindricalFunctor()
+    sheath_f = dg.geo.CylindricalFunctor()
+    mod_mag = dg.geo.createModifiedField( magparams, wall, wall_f, transition_f)
+    a = mag.params().a()
+    R0 = mag.R0()
+    print(R0-a, -a, R0+a, +a)
+    grid = dg.Grid(x0=(R0-a, -a), x1=(R0+a, +a), n=(3, 3), N=(24, 24))
+    dg.geo.createSheathRegion( sheath, mag, wall_f, grid, sheath_f)
+
+
 

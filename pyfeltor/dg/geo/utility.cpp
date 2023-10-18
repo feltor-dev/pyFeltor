@@ -11,6 +11,8 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(utility, m) {
     py::class_<dg::geo::CylindricalFunctor>(m,"CylindricalFunctor")
+        .def( py::init<>())
+        .def(py::init<std::function<double(double,double)>>())
         .def( "__call__", py::vectorize([]( dg::geo::CylindricalFunctor& my,
                         double R, double Z){ return my(R,Z);}))
         ;

@@ -209,7 +209,7 @@ Only a few caveats need to be considered:
   on the C++ code are simple python dictionaries on the python side (arrays
   need to be lists though)
 - functions or members with parameters from the original `dg` library (e.g.
-  `dg::Grid2d`) are currently not bound.
+  `dg::Grid2d`) are currently not bound (except `dg::geo::createSheathRegion`).
 - python does not support non-const double reference arguments (e.g. `double& R`)
   [see this FAQ entry on pybind11](https://pybind11.readthedocs.io/en/stable/faq.html#limitations-involving-reference-arguments)
   In the cases when it occurs we append these variables as a tuple to the
