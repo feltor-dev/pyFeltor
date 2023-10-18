@@ -47,16 +47,17 @@ pytest-3 -s . # run all the unittests with output
 
 ### The pyfeltor.dg.geo module
 Currently, the only way to install this module is via a local, editable install.
-Assuming that the pyfeltor.dg module was succesfully installed this way, the
-first step is to also install [feltor](https://github.com/feltor-dev/feltor)
+Assuming that the pyfeltor.dg module was succesfully installed this way
+- the first step is to also install [feltor](https://github.com/feltor-dev/feltor)
 following the quick start guide for a base installation.
-Second, instead of jsoncpp we here use the
+- Second, instead of jsoncpp we here use the
 [nlohmann/json](https://github.com/nlohmann/json) parser available either as a
 system package `nlohmann-json3-dev`.
-Next, we follow the first steps guide on [pybind11](https://github.com/pybind11/pybind11)
+- Next, we follow the first steps guide on [pybind11](https://github.com/pybind11/pybind11)
 and install it via `python3 -m pip install pybind11`.
-Further, we install the `pybind11-dev` and the `pybind11-json-dev` packages for
+- Further, we install the `pybind11-dev` and the `pybind11-json-dev` system packages for
 the corresponding C++ header files.
+
 Finally, invoke the Makefile in this repository
 ```bash
 make FELTOR_PATH=path/to/feltor -j 4
@@ -64,15 +65,13 @@ make FELTOR_PATH=path/to/feltor -j 4
 Replace `path/to/feltor` with the path to the Feltor library relative to the current
 directory. By default `FELTOR_PATH=../feltor`.
 
-That's it. The `pyfeltor.dg.geo` module is now available for use.
+That's it. With the editable install the `pyfeltor.dg.geo` module is now automatically
+imported together with `pyfeltor.dg`.
 You can test if it works by executing the test
 ```bash
 cd tests
 pytest -s test_geometries
 ```
-If the output is `dg.geo not compiled`, then something went wrong, even though the test
-won't formally fail.
-
 ## Usage
 
 Generally, pyfeltor is built to mimic the `dg` library in feltor.
