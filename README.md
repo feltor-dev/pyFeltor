@@ -210,6 +210,11 @@ Only a few caveats need to be considered:
   need to be lists though)
 - functions or members with parameters from the original `dg` library (e.g.
   `dg::Grid2d`) are currently not bound.
+- python does not support non-const double reference arguments (e.g. `double& R`)
+  [see this FAQ entry on pybind11](https://pybind11.readthedocs.io/en/stable/faq.html#limitations-involving-reference-arguments)
+  In the cases when it occurs we append these variables as a tuple to the
+  return value of the function (for example in `dg.geo.findOpoint`, see the
+  examples below)
 
 ### Generating simple flux functions
 A first application is to generate a flux function and evaluating it like so
