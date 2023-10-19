@@ -60,7 +60,8 @@ the corresponding C++ header files.
 
 Finally, invoke the Makefile in this repository
 ```bash
-make FELTOR_PATH=path/to/feltor -j 4
+export FELTOR_PATH=path/to/feltor
+make -j 4
 ```
 Replace `path/to/feltor` with the path to the Feltor library relative to the current
 directory. By default `FELTOR_PATH=../feltor`.

@@ -1,5 +1,6 @@
 device=cpu
-FELTOR_PATH=../feltor
+# ?= sets a variable value only if not previously set
+FELTOR_PATH ?=../feltor
 
 #configure machine
 include $(FELTOR_PATH)/config/default.mk
