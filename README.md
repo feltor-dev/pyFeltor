@@ -83,9 +83,11 @@ Consider
   `dg::Grid2d` and `dg::Grid3d`
 - Grids don't hold boundary conditions, these need to be provided in each
   function
-- the evaluate function generates 1d (flat) numpy arrays that can be **reshaped**
-    to 1d, 2d, 3d structure using `reshape(grid.shape)`
-- the x dimension is the **last/rightmost** dimension (row-major/C-style layout)
+- the evaluate function generates 1d (flat) numpy arrays that can be
+  **reshaped** to 1d, 2d, 3d structure using `reshape(grid.shape)`
+- the Grids do not name dimensions, only number them; the **last/rightmost**
+  dimension is the one that varies fastest in memory (contrary to the C++
+  library where the first dimension (x) varies fastest).
 - the equivalent of the `dg::blas1` vector functions are just plain math
   operators with numpy arrays
 - the equivalent of `dg::blas1::dot` and `dg::blas2::dot` is `np.sum`
@@ -118,7 +120,7 @@ print(f"Correct integral is {sol} while numerical is {num}")
 import numpy as np
 from pyfeltor import dg
 
-# !! The x dimension is the second one !!
+# We choose x as the second dimension here to make it vary in memory fastest
 n, Nx, Ny = 3, 12, 24
 g2d = dg.Grid(x0=[0.1, 0], x1=[2 * np.pi + 0.1, np.pi], n=[n, n], N=[Ny, Nx])
 w2d = dg.create.weights(g2d)
@@ -133,6 +135,9 @@ error = dx.dot(f2d) - x2d
 norm = np.sqrt(np.sum(w2d * error ** 2)) / np.sqrt(w2d * x2d ** 2)
 print(f"Relative error to true solution: {norm}")
 ```
+
+You can equally name x as the first dimension, then the y dimension
+varies fastest in memory. Just keep it consistent.
 
 ### The elliptic operator
 
@@ -271,9 +276,9 @@ RO,ZO  = mag.R0(), 0
 (point, RO, ZO) = dg.geo.findOpoint(mag.get_psip(), RO, ZO)
 print( "O-point found at ", RO, ZO)
 psipO = mag.psip()(RO,ZO)
-psi_values = np.linspace( psipO, 0, 20, endpoint = False)
-# the first value will be nan because at the O-point the q-profile is undefined
-print(qfunctor(psi_values))
+grid = dg.Grid( psipO, 0, 3, 64)
+qprof = dg.evaluate( qfunctor, grid)
+print(qprof)
 ```
 
 ## Contributions

@@ -7,8 +7,6 @@ class Grid:
 
         For the one-dimensional case numbers can be given which will be
         converted to lists
-        n[0] corresponds to the leftmost dimension
-        x corresponds to the rightmost dimension (the fastest varying in memory)
         Dimension is given by length of parameters
         """
         self.x0 = np.asarray(x0)
