@@ -20,7 +20,13 @@ through python this enables many applications beyond simple simulations
 diagnostics. The only downside is of course that all functions are
 unparallelized in python.
 
+As a second addition, now also Feltor's geometries extension is available in python.
+However, the geometries functions and classes are not re-implemented in python, but
+they are bound to python via the [pybind11](https://github.com/pybind11/pybind11)
+library. As such the corresponding C++ binding code must be compiled in order
+to generate the module `dg.geo`.
 ## Installation
+### The pyfeltor.dg module
 > You need python3 to install this module
 
 The simplest way is to install from the python package index [pypi](https://pypi.org/) via the package manager [pip](https://pip.pypa.io/en/stable/) v23.0
@@ -39,6 +45,34 @@ cd tests
 pytest-3 -s . # run all the unittests with output
 ```
 
+### The pyfeltor.dg.geo module
+Currently, the only way to install this module is via a local, editable install.
+Assuming that the pyfeltor.dg module was succesfully installed this way
+- the first step is to also install [feltor](https://github.com/feltor-dev/feltor)
+following the quick start guide for a base installation.
+- Second, instead of jsoncpp we here use the
+[nlohmann/json](https://github.com/nlohmann/json) parser available either as a
+system package `nlohmann-json3-dev`.
+- Next, we follow the first steps guide on [pybind11](https://github.com/pybind11/pybind11)
+and install it via `python3 -m pip install pybind11`.
+- Further, we install the `pybind11-dev` and the `pybind11-json-dev` system packages for
+the corresponding C++ header files.
+
+Finally, invoke the Makefile in this repository
+```bash
+export FELTOR_PATH=path/to/feltor
+make -j 4
+```
+Replace `path/to/feltor` with the path to the Feltor library relative to the current
+directory. By default `FELTOR_PATH=../feltor`.
+
+That's it. With the editable install the `pyfeltor.dg.geo` module is now automatically
+imported together with `pyfeltor.dg`.
+You can test if it works by executing the test
+```bash
+cd tests
+pytest -s test_geometries
+```
 ## Usage
 
 Generally, pyfeltor is built to mimic the `dg` library in feltor.
@@ -49,9 +83,11 @@ Consider
   `dg::Grid2d` and `dg::Grid3d`
 - Grids don't hold boundary conditions, these need to be provided in each
   function
-- the evaluate function generates 1d (flat) numpy arrays that can be **reshaped**
-    to 1d, 2d, 3d structure using `reshape(grid.shape)`
-- the x dimension is the **last/rightmost** dimension (row-major/C-style layout)
+- the evaluate function generates 1d (flat) numpy arrays that can be
+  **reshaped** to 1d, 2d, 3d structure using `reshape(grid.shape)`
+- the Grids do not name dimensions, only number them; the **last/rightmost**
+  dimension is the one that varies fastest in memory (contrary to the C++
+  library where the first dimension (x) varies fastest).
 - the equivalent of the `dg::blas1` vector functions are just plain math
   operators with numpy arrays
 - the equivalent of `dg::blas1::dot` and `dg::blas2::dot` is `np.sum`
@@ -84,7 +120,7 @@ print(f"Correct integral is {sol} while numerical is {num}")
 import numpy as np
 from pyfeltor import dg
 
-# !! The x dimension is the second one !!
+# We choose x as the second dimension here to make it vary in memory fastest
 n, Nx, Ny = 3, 12, 24
 g2d = dg.Grid(x0=[0.1, 0], x1=[2 * np.pi + 0.1, np.pi], n=[n, n], N=[Ny, Nx])
 w2d = dg.create.weights(g2d)
@@ -99,6 +135,9 @@ error = dx.dot(f2d) - x2d
 norm = np.sqrt(np.sum(w2d * error ** 2)) / np.sqrt(w2d * x2d ** 2)
 print(f"Relative error to true solution: {norm}")
 ```
+
+You can equally name x as the first dimension, then the y dimension
+varies fastest in memory. Just keep it consistent.
 
 ### The elliptic operator
 
@@ -160,6 +199,86 @@ inter = interp.dot(vec)
 interE = dg.evaluate(lambda y, x: np.sin(x) * np.sin(y), equi)
 error = np.sum((inter - interE) ** 2) / np.sum(inter ** 2)
 print(f"Error is {np.sqrt(error)} (should be small)!")
+```
+
+## The dg.geo module
+Currently the `dg.geo` module binds all classes and functions available
+in Modules 3 and 5 in [the documentation](https://mwiesenberger.github.io/feltor/geometries/html/modules.html).
+Since the interface is now the same, the C++ documentation applies exactly to the python module as well.
+Only a few caveats need to be considered:
+
+- in all derivatives of `dg::geo::aCylindricalFunctor` only the 2 dimensional
+  version of `operator()` is currently bound
+- in all derivatives of `dg::geo::aCylindricalFunctor` the
+  `operator()` is vectorized, i.e. can be called on a numpy array
+- function or member parameters that are of type `dg::file::WrappedJsonValue`
+  on the C++ code are simple python dictionaries on the python side (arrays
+  need to be lists though)
+- functions or members with parameters from the original `dg` library (e.g.
+  `dg::Grid2d`) are currently not bound (except `dg::geo::createSheathRegion`).
+- python does not support non-const double reference arguments (e.g. `double& R`)
+  [see this FAQ entry on pybind11](https://pybind11.readthedocs.io/en/stable/faq.html#limitations-involving-reference-arguments)
+  In the cases when it occurs we append these variables as a tuple to the
+  return value of the function (for example in `dg.geo.findOpoint`, see the
+  examples below)
+
+### Generating simple flux functions
+A first application is to generate a flux function and evaluating it like so
+```python
+from pyfeltor import dg
+params = {c = np.array( [1,2,3,4])
+params = {"R_0" : 400, "inverseaspectratio" : 20, "elongation" : 1, "triangularity" : 1,
+          "PP" : 1, "PI" : 1, "description" : "standardX", "M" : 2, "N" : 2, "c" : c.tolist()}
+pp = dg.geo.polynomial.Parameters(params)
+psip = dg.geo.polynomial.Psip(pp)
+grid = dg.Grid( x0 = (pp.R_0-pp.a, -pp.a), x1 = (pp.R_0+pp.a, pp.a), n=(3,3), N=(24, 24))
+psi = dg.evaluate( psip, grid)
+```
+As an application in
+[magneticfieldb](https://github.com/feltor-dev/magneticfielddb)
+you can see a polynomial flux function being fitted to an experimental field.
+
+### Generating the magnetic field and magnetic field functions
+In this second example we look how we can use a json magnetic field
+file to generate the magnetic field for us:
+
+```python
+from pyfeltor import dg
+with open ("geometry_params_Xpoint.json", "r") as f:
+    magparams = json.load(f)
+mag = dg.geo.createMagneticField( magparams)
+RO,ZO  = mag.R0(), 0
+(point, RO, ZO) = dg.geo.findOpoint(mag.get_psip(), RO, ZO)
+print( "O-point found at ", RO, ZO)
+a = mag.params().a()
+R0 = mag.R0()
+grid = dg.Grid(x0=(R0-a, -a), x1=(R0+a, +a), n=(3, 3), N=(24, 24))
+psi = dg.evaluate( mag.psip(), grid)
+BR  = dg.evaluate( dg.geo.BFieldR(mag), grid)
+BZ  = dg.evaluate( dg.geo.BFieldZ(mag), grid)
+# ... the list of possible functions is large ...
+# Since the functions can be evaluated using numpy arrays this also works
+R = dg.evaluate( lambda R, Z: R, grid)
+Z = dg.evaluate( lambda R, Z: Z, grid)
+BP = dg.geo.BFieldP(mag)(R,Z)
+# go on to plot with matplotlib ...
+```
+
+### Generating q-profile
+A common task is to generate a q-profile. This can be done like so:
+
+```python
+with open ("enrx_tcv.json", "r") as f:
+    magparams = json.load(f)
+mag = dg.geo.createMagneticField(magparams)
+qfunctor = dg.geo.SafetyFactor(mag)
+RO,ZO  = mag.R0(), 0
+(point, RO, ZO) = dg.geo.findOpoint(mag.get_psip(), RO, ZO)
+print( "O-point found at ", RO, ZO)
+psipO = mag.psip()(RO,ZO)
+grid = dg.Grid( psipO, 0, 3, 64)
+qprof = dg.evaluate( qfunctor, grid)
+print(qprof)
 ```
 
 ## Contributions

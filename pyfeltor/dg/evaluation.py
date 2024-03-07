@@ -35,7 +35,7 @@ def evaluate(function, grid):
             ]
         )
     if ndim > 4:
-        raise Exception("dg.valuate is not implemented for ndim > 4")
+        raise Exception("dg.evaluate is not implemented for ndim > 4")
 
 
 def integrate(to_integrate, grid, direction=direction.forward):
