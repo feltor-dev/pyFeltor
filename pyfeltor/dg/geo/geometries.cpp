@@ -31,6 +31,7 @@ PYBIND11_MODULE(geometries, m) { // name of the python module, not the C++ file
         .value("none", dg::geo::modifier::none)
         .value("heaviside", dg::geo::modifier::heaviside)
         .value("sol_pfr", dg::geo::modifier::sol_pfr)
+        .value("sol_pfr_2X", dg::geo::modifier::sol_pfr_2X)
         ;
     py::class_<dg::geo::MagneticFieldParameters>(m,"MagneticFieldParameters")
         .def(py::init<>())
