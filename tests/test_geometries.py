@@ -85,5 +85,22 @@ def test_sheath():
     grid = dg.Grid(x0=(R0-a, -a), x1=(R0+a, +a), n=(3, 3), N=(24, 24))
     dg.geo.createSheathRegion( sheath, mag, wall_f, grid, sheath_f)
 
+    point,RO,ZO = dg.geo.findOpoint( mag.get_psip(), R0, 0)
+    assert( point == 1)
+    assert( RO == 0.9022324795511738)
+    assert( ZO == -0.005684720497897021)
+
+    closed = dg.geo.mod.ClosedFieldlineRegion( mag);
+    assert( closed( 0, R0))
+    opened = dg.geo.mod.ClosedFieldlineRegion( mag, False);
+    assert( not opened( 0, R0))
+    sol = dg.geo.mod.SOLRegion( mag, wall_f);
+    assert( not sol( 0, R0))
+
+    cutter = dg.geo.ZCutter( 10)
+    assert( cutter( 1, 11))
+    assert( not cutter( 1, 8))
+
+
 
 

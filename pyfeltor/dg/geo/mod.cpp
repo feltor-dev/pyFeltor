@@ -49,4 +49,14 @@ PYBIND11_MODULE(mod, m) { // name of the python module, not the C++ file
         .def( "__call__", py::vectorize([]( poly::SetNot& my,
                         double R, double Z){ return my(R,Z);}))
         ;
+    py::class_<poly::ClosedFieldlineRegion>(m,"ClosedFieldlineRegion")
+        .def( py::init<const dg::geo::TokamakMagneticField&,bool>(), py::arg( "mag"), py::arg("closed") = true)
+        .def( "__call__", py::vectorize([]( poly::ClosedFieldlineRegion& my,
+                        double R, double Z){ return my(R,Z);}))
+        ;
+    py::class_<poly::SOLRegion>(m,"SOLRegion")
+        .def( py::init<const dg::geo::TokamakMagneticField&,dg::geo::CylindricalFunctor>())
+        .def( "__call__", py::vectorize([]( poly::SOLRegion& my,
+                        double R, double Z){ return my(R,Z);}))
+        ;
 }

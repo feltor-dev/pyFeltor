@@ -21,7 +21,7 @@ PYBIND11_MODULE(utility, m) {
         .def( "__call__", py::vectorize([]( dg::geo::Constant& my,
                         double R, double Z){ return my(R,Z);}));
     py::class_<dg::geo::ZCutter>(m,"ZCutter")
-        .def(py::init<double,int>())
+        .def(py::init<double,int>(), py::arg("ZX"), py::arg("sign") = +1)
         .def( "__call__", py::vectorize([]( dg::geo::ZCutter& my,
                         double R, double Z){ return my(R,Z);}));
     py::class_<dg::geo::CylindricalFunctorsLvl1>(m,"CylindricalFunctorsLvl1")
