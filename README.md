@@ -55,7 +55,7 @@ following the quick start guide for a base installation.
 system package `nlohmann-json3-dev`.
 - Next, we follow the first steps guide on [pybind11](https://github.com/pybind11/pybind11)
 and install it via `python3 -m pip install pybind11`.
-- Further, we install the `pybind11-dev` and the `pybind11-json-dev` system packages for
+- Further, we install the 'python3-dev', `pybind11-dev` and `pybind11-json-dev` system packages for
 the corresponding C++ header files.
 
 Finally, invoke the Makefile in this repository

@@ -23,8 +23,8 @@ PYBIND11_MODULE(flux, m) {
                 jsmod, dg::geo::CylindricalFunctor& wall,
                 dg::geo::CylindricalFunctor& transition)
             { return dg::geo::createModifiedField( gs, jsmod, wall, transition);});
-    m.def( "createWallRegion", []( const nlohmann::json& gs, const nlohmann::json&
-                jsmod) { return dg::geo::createWallRegion( gs, jsmod);});
+    m.def( "createWallRegion", []( const dg::geo::TokamakMagneticField& mag, const nlohmann::json&
+                jsmod) { return dg::geo::createWallRegion( mag, jsmod);});
     m.def( "createMagneticField", []( const nlohmann::json& json){
             return dg::geo::createMagneticField( json); });
     m.def( "createSheathRegion", []( nlohmann::json jsmod, dg::geo::TokamakMagneticField mag,

@@ -14,7 +14,8 @@ INCLUDE+=-I$(FELTOR_PATH)/inc/
 # Here is some Makefile magic to build the targets that live in another directory
 PRE=pyfeltor/dg/geo/
 TARGETS= geometries polynomial solovev guenter circular flux mod toroidal utility
-SUFFIX=$(shell python3-config --extension-suffix)
+#https://stackoverflow.com/questions/77112605/what-is-the-prefered-way-of-generating-extension-module-filename-suffix-in-virtu
+SUFFIX=$(shell python3 -c 'import sysconfig; print( sysconfig.get_config_var("EXT_SUFFIX"))')
 TARGETS_=$(addsuffix $(SUFFIX),$(TARGETS))
 ALL=$(addprefix $(PRE),$(TARGETS_))
 
