@@ -22,7 +22,7 @@ unparallelized in python.
 
 As a second addition, now also Feltor's geometries extension is available in python.
 However, the geometries functions and classes are not re-implemented in python, but
-they are bound to python via the [pybind11](https://github.com/pybind11/pybind11)
+they are bound to python via the [pybind11](https://github.com/pybind/pybind11)
 library. As such the corresponding C++ binding code must be compiled in order
 to generate the module `dg.geo`.
 ## Installation
