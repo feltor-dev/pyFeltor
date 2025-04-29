@@ -26,13 +26,11 @@ Tracker = "https://github.com/feltor-dev/pyfeltor/issues"
 
 [build-system] # which build system to use
 requires = [
-#    "wheel",
-    "setuptools >= 65", # build with setuptools
-    "setuptools-scm >= 8.0.0", # for automatic version from git tags
+    "scikit-build-core >= 0.10",
+    "pybind11"
 ]
-build-backend = "setuptools.build_meta"
-[tool.setuptools_scm]
-# Activate setuptools-scm
+build-backend = "scikit_build_core.build"
+# TODO How to get automatic versioning in scikit?
 
 
 [project.optional-dependencies]
