@@ -1,7 +1,7 @@
 [project]
 name = "pyfeltor"
 authors = [
-    {name = "Matthias Wiesenberger", email = "mattwi@fysik.dtu.dk"},
+    {name = "Matthias Wiesenberger", email = "mattwi@dtu.dk"},
 ]
 description = "A subset of Feltor's dg library as a python implementation"
 license = {file = "LICENSE"}
@@ -19,7 +19,7 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
 ]
-dynamic = ["version"] # build backend fills this field
+version = "0.1.0" # TODO How to get automatic versioning in scikit?
 [project.urls]
 Source = "https://github.com/feltor-dev/pyfeltor"
 Tracker = "https://github.com/feltor-dev/pyfeltor/issues"
@@ -30,7 +30,9 @@ requires = [
     "pybind11"
 ]
 build-backend = "scikit_build_core.build"
-# TODO How to get automatic versioning in scikit?
+
+[tool.scikit-build]
+build.verbose = true # cmake --build . -v ## only visible if pip install . -v is used
 
 
 [project.optional-dependencies]
