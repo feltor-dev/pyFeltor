@@ -33,9 +33,15 @@ build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
 build.verbose = true # cmake --build . -v ## only visible if pip install . -v is used
+cmake.args = ["-DCMAKE_POLICY_VERSION_MINIMUM=3.5"] # Necessary for nlohmann_json with cmake>4.0
 
 
 [project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-datadir" # For json files during geometries test
+]
+
 # https://docs.astral.sh/ruff/
 # pip install -e .[lint]
 lint = [
