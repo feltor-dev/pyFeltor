@@ -33,7 +33,7 @@ find_package(pybind11 CONFIG REQUIRED)
 
 # Needs to come after feltor because json is already included there
 # unless we use CPM_USE_LOCAL_PACKAGES
-find_package(pybind11_json CONFIG REQUIRED)
+CPMAddPackage( "gh:pybind/pybind11_json#0.2.15")
 
 set( PYFELTOR_EXE
     pyfeltor/dg/geo/geometries.cpp
