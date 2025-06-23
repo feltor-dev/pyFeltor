@@ -35,36 +35,41 @@ find_package(pybind11 CONFIG REQUIRED)
 # unless we use CPM_USE_LOCAL_PACKAGES
 CPMAddPackage( "gh:pybind/pybind11_json#0.2.15")
 
-set( PYFELTOR_EXE
-    pyfeltor/dg/geo/geometries.cpp
-    pyfeltor/dg/geo/polynomial.cpp
-    pyfeltor/dg/geo/solovev.cpp
-    pyfeltor/dg/geo/guenter.cpp
-    pyfeltor/dg/geo/circular.cpp
-    pyfeltor/dg/geo/flux.cpp
-    pyfeltor/dg/geo/mod.cpp
-    pyfeltor/dg/geo/toroidal.cpp
-    pyfeltor/dg/geo/utility.cpp
+
+# Follow the Makefile approach and compile each cpp into its own so lib
+
+set( PYFELTOR_LIBS
+    geometries
+    polynomial
+    solovev
+    guenter
+    circular
+    flux
+    mod
+    toroidal
+    utility
 )
 
 # Add a library using FindPython's tooling (pybind11 also provides a helper like
 # this)
-python_add_library(_core MODULE WITH_SOABI ${PYFELTOR_EXE})
-target_compile_features(_core PRIVATE cxx_std_17)
-if (MSVC)
-    # warning level 4
-    target_compile_options(_core PRIVATE /W4 /permissive- /arch:AVX2 /O2 /EHsc -DFP_FAST_FMA -D_USE_MATH_DEFINES)
-else()
-    # additional warnings
-    target_compile_options(_core PRIVATE -Wall -Wextra -Wpedantic -march=native -O2)
-endif()
+foreach( lib IN LISTS PYFELTOR_LIBS)
+    python_add_library(${lib} MODULE WITH_SOABI "pyfeltor/dg/geo/${lib}.cpp")
+    target_compile_features(${lib} PRIVATE cxx_std_17)
+    if (MSVC)
+        # warning level 4
+        target_compile_options(${lib} PRIVATE /W4 /permissive- /arch:AVX2 /O2 /EHsc -DFP_FAST_FMA -D_USE_MATH_DEFINES)
+    else()
+        # additional warnings
+        target_compile_options(${lib} PRIVATE -Wall -Wextra -Wpedantic -march=native -O2)
+    endif()
 
-target_link_libraries(_core PRIVATE pybind11::headers)
-
-
-target_link_libraries(_core PRIVATE feltor::dg::geometries)
-target_link_libraries(_core PRIVATE pybind11_json)
+    target_link_libraries(${lib} PRIVATE pybind11::headers)
 
 
-# The install directory is the output (wheel) directory
-install(TARGETS _core DESTINATION scikit_build_example)
+    target_link_libraries(${lib} PRIVATE feltor::dg::geometries)
+    target_link_libraries(${lib} PRIVATE pybind11_json)
+    # The install directory is the output (wheel) directory
+    install(TARGETS ${lib} DESTINATION pyfeltor/dg/geo)
+endforeach()
+
+
