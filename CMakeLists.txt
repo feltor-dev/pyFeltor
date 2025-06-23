@@ -16,8 +16,8 @@ include(cmake/CPM.cmake)
 set( CCCL_THRUST_DEVICE_SYSTEM "CPP")
 CPMAddPackage(
     NAME feltor
-    GITHUB_REPOSITORY "mwiesenberger/feltor"
-    GIT_TAG cmake
+    GITHUB_REPOSITORY "feltor-dev/feltor"
+    VERSION 8.2
     SYSTEM ON
     EXCLUDE_FROM_ALL ON
     OPTIONS "FELTOR_DG_WITH_MATRIX OFF" "FELTOR_FILE_WITH_NETCDF OFF"
@@ -32,7 +32,7 @@ find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
 find_package(pybind11 CONFIG REQUIRED)
 
 # Needs to come after feltor because json is already included there
-# Should we include guard feltor's CPM?
+# unless we use CPM_USE_LOCAL_PACKAGES
 find_package(pybind11_json CONFIG REQUIRED)
 
 set( PYFELTOR_EXE
