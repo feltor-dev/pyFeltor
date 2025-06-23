@@ -1,8 +1,8 @@
 import pytest
 import json
 import numpy as np
-import magneticfielddb as magdb
 from pyfeltor import dg
+import pytest_datadir
 
 geo_loaded = True
 try:
@@ -35,9 +35,9 @@ def test_polynomial():
     print( psi_)
 
 
-def test_make_field():
+def test_make_field(datadir):
     if not geo_exists(): return
-    with open ("geometry_params_Xpoint.json", "r") as f:
+    with open (datadir / "geometry_params_Xpoint.json", "r") as f:
         magparams = json.load(f)
     mag = dg.geo.createMagneticField( magparams)
     a = mag.params().a()
@@ -54,10 +54,9 @@ def test_make_field():
 
 
 
-def test_q_profile():
+def test_q_profile(datadir):
     if not geo_exists(): return
-    #magparams = magdb.select( "COMPASS/compass_1X.json")
-    with open ("enrx_tcv.json", "r") as f:
+    with open (datadir / "enrx_tcv.json", "r") as f:
         magparams = json.load(f)
     mag = dg.geo.createMagneticField(magparams)
     qfunctor = dg.geo.SafetyFactor(mag)
@@ -68,9 +67,9 @@ def test_q_profile():
     psi_values = np.linspace( psipO, 0, 20, endpoint = False)
     print(qfunctor(psi_values))
 
-def test_sheath():
+def test_sheath(datadir):
     if not geo_exists(): return
-    with open ("enrx_tcv.json", "r") as f:
+    with open (datadir / "enrx_tcv.json", "r") as f:
         magparams = json.load(f)
     mag = dg.geo.createMagneticField(magparams)
     wall = {"type" : "sol_pfr", "alpha": [0.05,0.05], "boundary" : [1.09,0.97]}
