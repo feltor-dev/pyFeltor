@@ -26,9 +26,8 @@ def pidxpj(n):
     op = np.zeros((n, n))
     for i in range(0, n):
         for j in range(0, n):
-            if i < j:
-                if (i + j) % 2 != 0:
-                    op[i, j] = 2
+            if (i < j) and ((i + j) % 2 != 0):
+                op[i, j] = 2
     return op
 
 

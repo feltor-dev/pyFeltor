@@ -44,6 +44,7 @@ test = [
 
 # https://docs.astral.sh/ruff/
 # pip install -e .[lint]
+# uv run ruff check --fix
 lint = [
   "ruff", # a python linter and formatter
 ]
@@ -69,3 +70,6 @@ select = [
     "RUF", # ruff specific
     "NPY", # NumPy specific
 ]
+[tool.ruff.lint.per-file-ignores]
+# Ignore `F403` (import violations) in all `__init__.py` files
+"__init__.py" = ["F403"]

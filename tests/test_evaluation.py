@@ -1,5 +1,5 @@
-import pytest
 import numpy as np
+
 from pyfeltor import dg
 
 # Run with pytest-3 -s . to see stdout output
@@ -36,7 +36,6 @@ def test_integration():
     n = 3
     Nx = 12
     Ny = 28
-    Nz = 100
     g1d = dg.Grid(x0=1, x1=2, n=n, N=Nx)
     g2d = dg.Grid((0, 0), (2 * np.pi, 2 * np.pi), (n, n), (Ny, Nx))
     w1d = dg.create.weights(g1d)

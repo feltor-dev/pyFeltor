@@ -1,12 +1,12 @@
-import numpy as np
 import scipy.sparse
+
+from ..enums import bc
 from . import operators as ops
-from ..enums import bc, direction
 
 
 def symm(n, N, h, bcx):
-    l = ops.lilj(n)
-    r = ops.rirj(n)
+    ll = ops.lilj(n)
+    rr = ops.rirj(n)
     lr = ops.lirj(n)
     rl = ops.rilj(n)
     d = ops.pidxpj(n)
@@ -19,14 +19,14 @@ def symm(n, N, h, bcx):
     a_bound_left = a.copy()
     # left boundary
     if (bcx == bc.DIR) or (bcx == bc.DIR_NEU):
-        a_bound_left += 0.5 * (t @ l)
+        a_bound_left += 0.5 * (t @ ll)
     elif (bcx == bc.NEU) or (bcx == bc.NEU_DIR):
-        a_bound_left -= 0.5 * (t @ l)
+        a_bound_left -= 0.5 * (t @ ll)
     # right boundary
     if (bcx == bc.DIR) or (bcx == bc.NEU_DIR):
-        a_bound_right -= 0.5 * (t @ r)
+        a_bound_right -= 0.5 * (t @ rr)
     elif (bcx == bc.NEU) or (bcx == bc.DIR_NEU):
-        a_bound_right += 0.5 * (t @ r)
+        a_bound_right += 0.5 * (t @ rr)
     b = t @ (1.0 / 2.0 * rl)
     bp = t @ (-1.0 / 2.0 * lr)  # pitfall: T*-m^T is NOT -(T*m)^T
     # transform to XSPACE
@@ -94,20 +94,20 @@ def symm(n, N, h, bcx):
                     vals.append(b[i, j])
 
     # sort
-    rows, cols, vals = zip(*sorted(zip(rows, cols, vals)))
+    rows, cols, vals = zip(*sorted(zip(rows, cols, vals, strict=False)), strict=False)
     return scipy.sparse.coo_matrix((vals, (rows, cols)))
 
 
 def plus(n, N, h, bcx):
-    l = ops.lilj(n)
-    r = ops.rirj(n)
-    lr = ops.lirj(n)
+    ll = ops.lilj(n)
+    #rr = ops.rirj(n)
+    #lr = ops.lirj(n)
     rl = ops.rilj(n)
     d = ops.pidxpj(n)
     t = ops.pipj_inv(n)
     t *= 2.0 / h
 
-    a = t @ (-l - d.transpose())
+    a = t @ (-ll - d.transpose())
     # bcx = PER
     a_bound_left = a.copy()  # PER, NEU, and NEU_DIR
     a_bound_right = a.copy()  # PER, DIR, and NEU_DIR
@@ -168,20 +168,20 @@ def plus(n, N, h, bcx):
                     vals.append(b[i, j])
 
     # sort
-    rows, cols, vals = zip(*sorted(zip(rows, cols, vals)))
+    rows, cols, vals = zip(*sorted(zip(rows, cols, vals, strict=False)), strict=False)
     return scipy.sparse.coo_matrix((vals, (rows, cols)))
 
 
 def minus(n, N, h, bcx):
-    l = ops.lilj(n)
-    r = ops.rirj(n)
+    ll = ops.lilj(n)
+    #rr = ops.rirj(n)
     lr = ops.lirj(n)
-    rl = ops.rilj(n)
+    #rl = ops.rilj(n)
     d = ops.pidxpj(n)
     t = ops.pipj_inv(n)
     t *= 2.0 / h
 
-    a = t @ (l + d)
+    a = t @ (ll + d)
     # bcx = PER
     a_bound_right = a.copy()  # PER, NEU and DIR_NEU
     a_bound_left = a.copy()  # PER, DIR and DIR_NEU
@@ -242,25 +242,25 @@ def minus(n, N, h, bcx):
                     vals.append(a[i, j])
 
     # sort
-    rows, cols, vals = zip(*sorted(zip(rows, cols, vals)))
+    rows, cols, vals = zip(*sorted(zip(rows, cols, vals, strict=False)), strict=False)
     return scipy.sparse.coo_matrix((vals, (rows, cols)))
 
 
 def jump_normed(n, N, h, bcx):
-    l = ops.lilj(n)
-    r = ops.rirj(n)
+    ll = ops.lilj(n)
+    rr = ops.rirj(n)
     lr = ops.lirj(n)
     rl = ops.rilj(n)
 
     t = ops.pipj_inv(n)
     t *= 2.0 / h
-    a = t @ (l + r)
+    a = t @ (ll + rr)
     a_bound_left = a.copy()  # DIR and PER
     if (bcx == bc.NEU) or (bcx == bc.NEU_DIR):
-        a_bound_left = t @ r
+        a_bound_left = t @ rr
     a_bound_right = a.copy()  # DIR and PER
     if (bcx == bc.NEU) or (bcx == bc.DIR_NEU):
-        a_bound_right = t @ l
+        a_bound_right = t @ ll
     b = -t @ rl
     bp = -t @ lr
     # transform to XSPACE
@@ -328,7 +328,7 @@ def jump_normed(n, N, h, bcx):
                     vals.append(b[i, j])
 
     # sort
-    rows, cols, vals = zip(*sorted(zip(rows, cols, vals)))
+    rows, cols, vals = zip(*sorted(zip(rows, cols, vals, strict=False)), strict=False)
     return scipy.sparse.coo_matrix((vals, (rows, cols)))
 
 

@@ -1,18 +1,20 @@
-from pyfeltor import dg
 import numpy as np
-import scipy.sparse.linalg
 import scipy.linalg
+import scipy.sparse.linalg
+
+from pyfeltor import dg
 
 
 def test_elliptic():
     amp = 0.9
-    pol = lambda y, x: 1 + amp * np.sin(x) * np.sin(y)
-    rhs = (
-        lambda y, x: 2.0 * np.sin(x) * np.sin(y) * (amp * np.sin(x) * np.sin(y) + 1)
-        - amp * np.sin(x) * np.sin(x) * np.cos(y) * np.cos(y)
-        - amp * np.cos(x) * np.cos(x) * np.sin(y) * np.sin(y)
-    )
-    sol = lambda y, x: np.sin(x) * np.sin(y)
+    def pol(y, x):
+        return 1 + amp * np.sin(x) * np.sin(y)
+    def rhs(y, x):
+        return 2.0 * np.sin(x) * np.sin(y) * (amp * np.sin(x) * np.sin(y) + 1)\
+            - amp * np.sin(x) * np.sin(x) * np.cos(y) * np.cos(y)\
+            - amp * np.cos(x) * np.cos(x) * np.sin(y) * np.sin(y)
+    def sol(y,x):
+        return np.sin(x) * np.sin(y)
     lx, ly = np.pi, 2 * np.pi
     bcx, bcy = dg.bc.DIR, dg.bc.PER
     n, Nx, Ny = 3, 64, 64

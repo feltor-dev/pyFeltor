@@ -1,7 +1,7 @@
-import numpy as np
-from .derivative import dx, jump
-from .. import enums
 import scipy.sparse as sparse
+
+from .. import enums
+from .derivative import dx, jump
 
 
 def elliptic(grid, bcs, directions, sigma, jumpfactor=1):

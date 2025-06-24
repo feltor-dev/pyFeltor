@@ -1,6 +1,6 @@
-import pytest
-from pyfeltor import dg
 import numpy as np
+
+from pyfeltor import dg
 
 # Run with pytest-3 -s . to see stdout output
 
@@ -28,11 +28,11 @@ def test_dx():
     gNEU = dg.Grid(np.pi / 2.0, 3 * np.pi / 2.0, n, N)
     gDIR_NEU = dg.Grid(0, np.pi / 2.0, n, N)
     gNEU_DIR = dg.Grid(np.pi / 2.0, np.pi, n, N)
-    g = [gPER, gDIR, gNEU, gDIR_NEU, gNEU_DIR]
-    bcx = [dg.bc.PER, dg.bc.DIR, dg.bc.NEU, dg.bc.DIR_NEU, dg.bc.NEU_DIR]
+    grids = [gPER, gDIR, gNEU, gDIR_NEU, gNEU_DIR]
+    bcxs = [dg.bc.PER, dg.bc.DIR, dg.bc.NEU, dg.bc.DIR_NEU, dg.bc.NEU_DIR]
     print("TEST NORMAL TOPOLOGY: YOU SHOULD SEE CONVERGENCE FOR ALL OUTPUTS!!!")
     print("COMPARE TO dx_t.cu")
-    for (g, bcx) in zip(g, bcx):
+    for (g, bcx) in zip(grids, bcxs, strict=False):
         print("Boundary condition ", bcx)
         hs = dg.create.dx(0, g, bcx, dg.direction.centered)
         hf = dg.create.dx(0, g, bcx, dg.direction.forward)
@@ -45,24 +45,24 @@ def test_dx():
         null = dg.evaluate(lambda x: 0, g)
         error = deri - hs.dot(func)
         print(
-            f"Distance to true solution (symmetric): {np.sqrt(np.sum( w1d*error**2) )}"
+            f"Distance to true solution (symmetric): {np.sqrt(np.sum(w1d * error**2))}"
         )
         error = deri - hf.dot(func)
-        print(f"Distance to true solution (forward): {np.sqrt(np.sum( w1d*error**2) )}")
+        print(f"Distance to true solution (forward): {np.sqrt(np.sum(w1d * error**2))}")
         error = deri - hb.dot(func)
         print(
-            f"Distance to true solution (backward): {np.sqrt(np.sum( w1d*error**2) )}"
+            f"Distance to true solution (backward): {np.sqrt(np.sum(w1d * error**2))}"
         )
         error = null - js.dot(func)
         print(
-            f"Distance to true solution (jump     ): {np.sqrt(np.sum( w1d*error**2) )}"
+            f"Distance to true solution (jump     ): {np.sqrt(np.sum(w1d * error**2))}"
         )
 
 
 def test_derivative():
-    n, Nx, Ny, Nz = 3, 24, 28, 100
-    print(f"On Grid {n} x {Nx} x {Ny} x {Nz}")
-    bcx, bcy, bcz = dg.bc.DIR, dg.bc.PER, dg.bc.NEU_DIR
+    n, Nx, Ny = 3, 24, 28
+    print(f"On Grid {n} x {Nx} x {Ny}")
+    bcx, bcy = dg.bc.DIR, dg.bc.PER
     g2d = dg.Grid([0.1, 0], [2 * np.pi + 0.1, np.pi], [n, n], [Ny, Nx])
     w2d = dg.create.weights(g2d)
 
@@ -76,7 +76,6 @@ def test_derivative():
     dy2d = dg.evaluate(cosy, g2d)
     null2 = dg.evaluate(zero, g2d)
     sol2 = [dx2d, dy2d, null2, null2]
-    # binary2[4562611930300281864,4553674328256556132,4567083257206218817,4574111364446550002]
     sol = [
         0.0010775034079703078,
         0.00027314872436790867,

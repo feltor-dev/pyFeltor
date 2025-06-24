@@ -1,5 +1,6 @@
-from .dx import normed, jump_normed
 import scipy.sparse
+
+from .dx import jump_normed, normed
 
 
 def dx(dim, grid, bc, direction):
