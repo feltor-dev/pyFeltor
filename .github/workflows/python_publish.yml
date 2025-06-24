@@ -3,7 +3,7 @@ name: Build/publish Python Package
 # Adopted from gh:pybind/scikit_build_example
 # Read more on https://cibuildwheel.pypa.io/en/stable
 
-on: [push, pull-request]
+on:
   workflow_dispatch:
   pull_request:
   push:
