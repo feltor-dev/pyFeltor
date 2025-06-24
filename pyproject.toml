@@ -35,13 +35,15 @@ build-backend = "scikit_build_core.build"
 build.verbose = true # cmake --build . -v ## only visible if pip install . -v is used
 cmake.args = ["-DCMAKE_POLICY_VERSION_MINIMUM=3.5"] # Necessary for nlohmann_json with cmake>4.0
 
-# gh:pypa/cibuildwheel
 # Since we distribute binary wheels we need to build for multiple os using
-# cibuildwheel (copied from scikit_build_example
+# gh:pypa/cibuildwheel
+# You can local test using (requires docker)
+# uvx cibuildwheel
 [tool.cibuildwheel]
 build-frontend = "build[uv]"
 test-command = "pytest {project}/tests"
 test-extras = ["test"]
+skip = "*-musllinux*" # Skip musllinux (conflicts with libcudacxx)
 
 [tool.cibuildwheel.pyodide]
 build-frontend = {name = "build", args = ["--exports", "whole_archive"]}

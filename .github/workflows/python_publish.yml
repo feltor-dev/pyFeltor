@@ -1,8 +1,9 @@
 name: Build/publish Python Package
 
 # Adopted from gh:pybind/scikit_build_example
+# Read more on https://cibuildwheel.pypa.io/en/stable
 
-on:
+on: [push, pull-request]
   workflow_dispatch:
   pull_request:
   push:
@@ -25,8 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-      with:
-        submodules: true
 
     - name: Build SDist
       run: pipx run build --sdist
@@ -41,7 +40,7 @@ jobs:
 
 
   build_wheels:
-    name: Wheels on ${{ matrix.os }}
+    name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -50,15 +49,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        submodules: true
 
     - uses: astral-sh/setup-uv@v4
 
-    - uses: pypa/cibuildwheel@v2.22
+    - name: Build wheels
+      uses: pypa/cibuildwheel@v3.0.0
       env:
         CIBW_ENABLE: cpython-prerelease
         CIBW_ARCHS_WINDOWS: auto ARM64
+      with:
+        package-dir: .
+        output-dir: wheelhouse
+        config-file: "{package}/pyproject.toml"
 
     - name: Verify clean directory
       run: git diff --exit-code
