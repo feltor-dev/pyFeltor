@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest] # Feltor-8.2 does not build on mac using clang++
         python-version: ["3.12", "3.13"]
 
     steps:
