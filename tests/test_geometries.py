@@ -4,23 +4,8 @@ import numpy as np
 from pyfeltor import dg
 import pytest_datadir
 
-geo_loaded = True
-try:
-    from pyfeltor.dg import geo
-except ImportError:
-    geo_loaded = False
-
-
-# Run with pytest-3 -s . to see stdout output
-def geo_exists():
-    if not geo_loaded:
-        print( "dg.geo not compiled")
-        return False
-    return True
-
 
 def test_polynomial():
-    if not geo_exists(): return
     c = np.array( [1,2,3,4])
     params = {"R_0" : 400, "inverseaspectratio" : 20, "elongation" : 1, "triangularity" : 1,
               "PP" : 1, "PI" : 1, "description" : "standardX", "M" : 2, "N" : 2, "c" : c.tolist()}
@@ -36,7 +21,6 @@ def test_polynomial():
 
 
 def test_make_field(datadir):
-    if not geo_exists(): return
     with open (datadir / "geometry_params_Xpoint.json", "r") as f:
         magparams = json.load(f)
     mag = dg.geo.createMagneticField( magparams)
@@ -55,7 +39,6 @@ def test_make_field(datadir):
 
 
 def test_q_profile(datadir):
-    if not geo_exists(): return
     with open (datadir / "enrx_tcv.json", "r") as f:
         magparams = json.load(f)
     mag = dg.geo.createMagneticField(magparams)
@@ -68,7 +51,6 @@ def test_q_profile(datadir):
     print(qfunctor(psi_values))
 
 def test_sheath(datadir):
-    if not geo_exists(): return
     with open (datadir / "enrx_tcv.json", "r") as f:
         magparams = json.load(f)
     mag = dg.geo.createMagneticField(magparams)
