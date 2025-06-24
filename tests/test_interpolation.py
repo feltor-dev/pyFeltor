@@ -1,5 +1,6 @@
-from pyfeltor import dg
 import numpy as np
+
+from pyfeltor import dg
 
 
 def test_interpolation1d():
@@ -76,9 +77,9 @@ def test_projection():
 
     n, Nx, Ny = 3, 8, 8
     g = dg.Grid(x0=[-5 * np.pi, -np.pi], x1=[-4 * np.pi, 0], n=[n, n], N=[Ny, Nx])
-    g_fine = dg.Grid( x0=g.x0, x1=g.x1, n=g.n, N=[n * Ny, n * Nx])
+    g_fine = dg.Grid(x0=g.x0, x1=g.x1, n=g.n, N=[n * Ny, n * Nx])
 
-    project = dg.create.projection( g, g_fine)
+    project = dg.create.projection(g, g_fine)
     vec = dg.evaluate(lambda y, x: np.sin(x) * np.sin(y), g_fine)
     project = project.dot(vec)
     projectE = dg.evaluate(lambda y, x: np.sin(x) * np.sin(y), g)

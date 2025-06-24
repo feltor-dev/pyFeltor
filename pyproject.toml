@@ -1,6 +1,75 @@
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+[project]
+name = "pyfeltor"
+authors = [
+    {name = "Matthias Wiesenberger", email = "mattwi@dtu.dk"},
+]
+description = "A subset of Feltor's dg library as a python implementation"
+license = {file = "LICENSE"}
+readme = "README.md"
+requires-python = ">=3.12" # see scientific-python.org/specs/spec-0000 :
+dependencies = [
+    "scipy >= 1.10.0",
+    "numpy >= 1.24.0",
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+]
+version = "0.1.0" # TODO How to get automatic versioning in scikit?
+[project.urls]
+Source = "https://github.com/feltor-dev/pyfeltor"
+Tracker = "https://github.com/feltor-dev/pyfeltor/issues"
 
-[tool.setuptools_scm]
-write_to = "pyfeltor/_version.py"
+[build-system] # which build system to use
+requires = [
+    "scikit-build-core >= 0.10",
+    "pybind11"
+]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+build.verbose = true # cmake --build . -v ## only visible if pip install . -v is used
+cmake.args = ["-DCMAKE_POLICY_VERSION_MINIMUM=3.5"] # Necessary for nlohmann_json with cmake>4.0
+
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-datadir" # For json files during geometries test
+]
+
+# https://docs.astral.sh/ruff/
+# pip install -e .[lint]
+# uv run ruff check --fix
+lint = [
+  "ruff", # a python linter and formatter
+]
+# Ruff rules
+# https://docs.astral.sh/ruff/rules/
+[tool.ruff.lint]
+select = [
+    "F", # Pyflakes
+    "E", # pycodestyle error
+    "W", # pycodestyle warning
+    "I", # isort
+    "PT", # flake8-pytest-style
+    "B", # flake8-bugbear
+    "A", # flake8-builtins
+    "C4", # flake8-comprehensions
+    "T10", # flake8-debugger
+    # "PTH", # flake8-use-pathlib
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+    "UP", # pyupgrade
+    "FURB", # refurb
+    "PERF", # perflint
+    "RUF", # ruff specific
+    "NPY", # NumPy specific
+]
+[tool.ruff.lint.per-file-ignores]
+# Ignore `F403` (import violations) in all `__init__.py` files
+"__init__.py" = ["F403"]

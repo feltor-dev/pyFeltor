@@ -9,3 +9,12 @@ pyfeltor/dg/geo/__pycache__
 .eggs
 dist
 pyfeltor/_version.py
+
+uv.lock
+
+# ignore visual studio .vs table
+/.vs
+
+# CMake output
+build
+out

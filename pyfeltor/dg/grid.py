@@ -30,11 +30,10 @@ class Grid:
             len(N)
         except TypeError:
             self.N = np.asarray([N])
-        assert (  # lengths must be consistent
-            (len(self.x0) == len(self.x1))
-            and (len(self.x0) == len(self.n))
-            and (len(self.x0) == len(self.N))
-        )
+        # lengths must be consistent
+        assert(len(self.x0) == len(self.x1))
+        assert(len(self.x0) == len(self.n))
+        assert(len(self.x0) == len(self.N))
 
     @property
     def n(self):

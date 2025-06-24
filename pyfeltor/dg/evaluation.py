@@ -1,7 +1,8 @@
-from .create import operators as ops
-from . import create
-from .enums import direction
 import numpy as np
+
+from . import create
+from .create import operators as ops
+from .enums import direction
 
 
 def evaluate(function, grid):
@@ -9,12 +10,11 @@ def evaluate(function, grid):
 
     function: has to take numpy arrays as arguments, f(x), f(y,x), f(z,y,x)
     grid: instance of dg.Grid
-    return: flat np.array with x the fastest varying dimension. Can be reshaped with reshape(grid.shape)
+    return: flat np.array with x the fastest varying dimension. Can be reshaped
+    with reshape(grid.shape)
     """
-    xs = []
     ndim = grid.ndim
-    for dim in range(0, ndim):
-        xs.append(create.abscissas(grid, dim))
+    xs = [create.abscissas(grid, dim) for dim in range(0, ndim)]
 
     if ndim == 1:
         return np.array([function(x) for x in xs[0]])
@@ -59,8 +59,8 @@ def integrate(to_integrate, grid, direction=direction.forward):
     out = np.zeros(grid.size())
     for i in range(0, grid.N[0]):
         for k in range(0, grid.n[0]):
-            for l in range(0, grid.n[0]):
-                out[i * n + k] += ninj[k, l] * to_in[i * n + l]
+            for ll in range(0, grid.n[0]):
+                out[i * n + k] += ninj[k, ll] * to_in[i * n + ll]
             out[i * n + k] += constant
         for k in range(0, grid.n[0]):
             constant += h * forward[0, k] * to_in[i * n + k]

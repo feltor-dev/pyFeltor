@@ -20,14 +20,13 @@ through python this enables many applications beyond simple simulations
 diagnostics. The only downside is of course that all functions are
 unparallelized in python.
 
-As a second addition, now also Feltor's geometries extension is available in python.
+As a second addition, Feltor's geometries extension is available in python.
 However, the geometries functions and classes are not re-implemented in python, but
-they are bound to python via the [pybind11](https://github.com/pybind11/pybind11)
+they are bound to python via the [pybind11](https://github.com/pybind/pybind11)
 library. As such the corresponding C++ binding code must be compiled in order
 to generate the module `dg.geo`.
 ## Installation
-### The pyfeltor.dg module
-> You need python3 to install this module
+> The `pyfeltor.dg.geo` part of the module contains python bindings for the underlying C++ [feltor](https://github.com/feltor-dev/feltor) code using [pybind11](https://github.com/pybind/pybind11). During installation the C++ code will be compiled using cmake, which may take a minute or two. 
 
 The simplest way is to install from the python package index [pypi](https://pypi.org/) via the package manager [pip](https://pip.pypa.io/en/stable/) v23.0
 ```bash
@@ -45,34 +44,6 @@ cd tests
 pytest-3 -s . # run all the unittests with output
 ```
 
-### The pyfeltor.dg.geo module
-Currently, the only way to install this module is via a local, editable install.
-Assuming that the pyfeltor.dg module was succesfully installed this way
-- the first step is to also install [feltor](https://github.com/feltor-dev/feltor)
-following the quick start guide for a base installation.
-- Second, instead of jsoncpp we here use the
-[nlohmann/json](https://github.com/nlohmann/json) parser available either as a
-system package `nlohmann-json3-dev`.
-- Next, we follow the first steps guide on [pybind11](https://github.com/pybind11/pybind11)
-and install it via `python3 -m pip install pybind11`.
-- Further, we install the 'python3-dev', `pybind11-dev` and `pybind11-json-dev` system packages for
-the corresponding C++ header files.
-
-Finally, invoke the Makefile in this repository
-```bash
-export FELTOR_PATH=path/to/feltor
-make -j 4
-```
-Replace `path/to/feltor` with the path to the Feltor library relative to the current
-directory. By default `FELTOR_PATH=../feltor`.
-
-That's it. With the editable install the `pyfeltor.dg.geo` module is now automatically
-imported together with `pyfeltor.dg`.
-You can test if it works by executing the test
-```bash
-cd tests
-pytest -s test_geometries
-```
 ## Usage
 
 Generally, pyfeltor is built to mimic the `dg` library in feltor.

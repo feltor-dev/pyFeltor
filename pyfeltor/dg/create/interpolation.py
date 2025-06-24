@@ -1,10 +1,12 @@
-import numpy as np
 import itertools
+
+import numpy as np
 import scipy.sparse
-from .weights import weights
-from . import operators as ops
-from ..enums import bc, direction
+
+from ..enums import bc
 from ..evaluation import evaluate
+from . import operators as ops
+from .weights import weights
 
 
 def shift(grid, x, bcs):
@@ -76,24 +78,25 @@ def interpolation(xs, grid, bcs):
         else:
             raise Exception("interpolation not implemented for ndim > 3")
         for it in tuples:
-            I = 0  # the index to push back
-            V = 1  # the value to push back
+            II = 0  # the index to push back
+            VV = 1  # the value to push back
             for kk in range(0, grid.ndim):
-                I = (I * grid.N[kk] + nn[kk]) * grid.n[kk] + it[kk]
-                V = V * px[kk][it[kk]]
+                II = (II * grid.N[kk] + nn[kk]) * grid.n[kk] + it[kk]
+                VV = VV * px[kk][it[kk]]
             # print( i, I, V)
             rows.append(i)
-            cols.append(round(I))
+            cols.append(round(II))
             if not negative:
-                vals.append(V)
+                vals.append(VV)
             else:
-                vals.append(-V)
+                vals.append(-VV)
     # sort
-    rows, cols, vals = zip(*sorted(zip(rows, cols, vals)))
-    return scipy.sparse.coo_matrix((vals, (rows, cols)), shape = (len(xs[0]),grid.size()))
+    rows, cols, vals = zip(*sorted(zip(rows, cols, vals, strict=False)), strict=False)
+    return scipy.sparse.coo_matrix((vals, (rows, cols)), shape=(len(xs[0]),
+        grid.size()))
 
 
-def projection( grid_new, grid_old):
+def projection(grid_new, grid_old):
     """ Create a projection between two grids
 
     This matrix can be applied to vectors defined on the old (fine) grid to obtain
@@ -106,26 +109,28 @@ def projection( grid_new, grid_old):
     """
     ndim = grid_old.ndim
     if grid_new.ndim != ndim:
-        raise Exception( "Cannot project between grids with different dimensions")
-    for i in range( 0, ndim):
-        if grid_old.N[i] % grid_new.N[i] != 0 :
-            print( f"WARNING you project between incompatible grids!! old N: {grid_old.N[i]} new N {grid_new.N[i]}")
-        if grid_old.n[i] < grid_new.n[i]  :
-            print( f"WARNING you project between incompatible grids!! old n: {grid_old.n[i]} new n {grid_new.n[i]}")
-    wf = scipy.sparse.diags(weights( grid_old))
-    points = list()
-    bcs = [bc.PER for i in range(0,ndim)]
+        raise Exception("Cannot project between grids with different dimensions")
+    for i in range(0, ndim):
+        if grid_old.N[i] % grid_new.N[i] != 0:
+            print(f"WARNING you project between incompatible grids!! old N: \
+{grid_old.N[i]} new N {grid_new.N[i]}")
+        if grid_old.n[i] < grid_new.n[i]:
+            print(f"WARNING you project between incompatible grids!! old n: \
+{grid_old.n[i]} new n {grid_new.n[i]}")
+    wf = scipy.sparse.diags(weights(grid_old))
+    points = []
+    bcs = [bc.PER for i in range(0, ndim)]
     if ndim == 1:
-        points.append( evaluate( lambda x: x, grid_old))
+        points.append(evaluate(lambda x: x, grid_old))
     elif ndim == 2:
-        points.append( evaluate( lambda y,x: y, grid_old))
-        points.append( evaluate( lambda y,x: x, grid_old))
+        points.append(evaluate(lambda y, x: y, grid_old))
+        points.append(evaluate(lambda y, x: x, grid_old))
     elif ndim == 3:
-        points.append( evaluate( lambda z,y,x: z, grid_old))
-        points.append( evaluate( lambda z,y,x: y, grid_old))
-        points.append( evaluate( lambda z,y,x: x, grid_old))
+        points.append(evaluate(lambda z, y, x: z, grid_old))
+        points.append(evaluate(lambda z, y, x: y, grid_old))
+        points.append(evaluate(lambda z, y, x: x, grid_old))
     else:
         raise Exception("Projection not implemented for ndim > 3")
-    A = interpolation(  points, grid_new, bcs )
-    vc = scipy.sparse.diags(1./weights( grid_new))
+    A = interpolation(points, grid_new, bcs)
+    vc = scipy.sparse.diags(1. / weights(grid_new))
     return vc @ A.transpose() @ wf
