@@ -19,7 +19,7 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
 ]
-version = "0.1.0" # TODO How to get automatic versioning in scikit?
+version = "0.1.1" # TODO How to get automatic versioning in scikit?
 [project.urls]
 Source = "https://github.com/feltor-dev/pyfeltor"
 Tracker = "https://github.com/feltor-dev/pyfeltor/issues"
@@ -34,6 +34,17 @@ build-backend = "scikit_build_core.build"
 [tool.scikit-build]
 build.verbose = true # cmake --build . -v ## only visible if pip install . -v is used
 cmake.args = ["-DCMAKE_POLICY_VERSION_MINIMUM=3.5"] # Necessary for nlohmann_json with cmake>4.0
+
+# gh:pypa/cibuildwheel
+# Since we distribute binary wheels we need to build for multiple os using
+# cibuildwheel (copied from scikit_build_example
+[tool.cibuildwheel]
+build-frontend = "build[uv]"
+test-command = "pytest {project}/tests"
+test-extras = ["test"]
+
+[tool.cibuildwheel.pyodide]
+build-frontend = {name = "build", args = ["--exports", "whole_archive"]}
 
 
 [project.optional-dependencies]
