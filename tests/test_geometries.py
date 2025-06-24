@@ -86,8 +86,8 @@ def test_sheath(datadir):
 
     point,RO,ZO = dg.geo.findOpoint( mag.get_psip(), R0, 0)
     assert( point == 1)
-    assert( RO == 0.9022324795511738)
-    assert( ZO == -0.005684720497897021)
+    assert( abs(RO - 0.9022324795511738) < 1e-10)
+    assert( abs(ZO - (-0.005684720497897021)) < 1e-10)
 
     closed = dg.geo.mod.ClosedFieldlineRegion( mag);
     assert( closed( 0, R0))

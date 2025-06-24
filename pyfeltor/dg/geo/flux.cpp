@@ -10,8 +10,6 @@
 
 namespace py = pybind11;
 
-// import part of itself!? Does this always work?? Wow
-py::object grid = py::module_::import( "pyfeltor.dg").attr("Grid");
 
 PYBIND11_MODULE(flux, m) {
     m.def( "createSolovevField", &dg::geo::createSolovevField);
