@@ -44,6 +44,9 @@ build-frontend = "build[uv]"
 test-command = "pytest {project}/tests"
 test-extras = ["test"]
 skip = "*-musllinux*" # Skip musllinux (conflicts with libcudacxx)
+# For some reason the github runner tries to install scipy from source and
+# fails with missing blas library. So let's prevent that:
+before-test = "uv pip install scipy --only-binary=:all:"
 
 [tool.cibuildwheel.pyodide]
 build-frontend = {name = "build", args = ["--exports", "whole_archive"]}
