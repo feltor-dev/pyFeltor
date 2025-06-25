@@ -55,7 +55,7 @@ jobs:
     - name: Build wheels
       uses: pypa/cibuildwheel@v3.0.0
       env:
-        CIBW_ARCHS_WINDOWS: auto ARM64
+        CIBW_ARCHS_WINDOWS: auto64
       with:
         package-dir: .
         output-dir: wheelhouse
