@@ -47,8 +47,7 @@ skip = "*-musllinux*" # Skip musllinux (conflicts with libcudacxx)
 
 [tool.bibuildwheel.macos]
 before-build= [
-    "brew install llvm@19",
-    "export CXX=$(brew --prefix llvm@19)/bin/clang++"
+    "export CXX=g++"
 ]
 
 [tool.cibuildwheel.pyodide]

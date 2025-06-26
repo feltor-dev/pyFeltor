@@ -21,8 +21,7 @@ jobs:
       shell: bash
       run: |
         if [[ ${{ matrix.os }} = "macos-latest" ]]; then
-          brew install llvm@19
-          export CXX=$(brew --prefix llvm@19)/bin/clang++
+          export CXX=g++
         fi
         python -m pip install --upgrade pip
         python -m pip install .[test]
