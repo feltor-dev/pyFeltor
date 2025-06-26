@@ -45,12 +45,6 @@ test-command = "pytest {project}/tests"
 test-extras = ["test"]
 skip = "*-musllinux*" # Skip musllinux (conflicts with libcudacxx)
 
-[tool.cibuildwheel.macos]
-before-build= [
-    "export CXX=g++-13",
-    "g++-13 --version"
-]
-
 [tool.cibuildwheel.pyodide]
 build-frontend = {name = "build", args = ["--exports", "whole_archive"]}
 
