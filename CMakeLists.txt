@@ -16,8 +16,10 @@ include(cmake/CPM.cmake)
 set( CCCL_THRUST_DEVICE_SYSTEM "CPP")
 CPMAddPackage(
     NAME feltor
-    GITHUB_REPOSITORY "feltor-dev/feltor"
-    VERSION 8.2
+    #GITHUB_REPOSITORY "feltor-dev/feltor"
+    #VERSION 8.2
+    GITHUB_REPOSITORY "mwiesenberger/feltor"
+    GIT_TAG clang-test
     SYSTEM ON
     EXCLUDE_FROM_ALL ON
     OPTIONS "FELTOR_DG_WITH_MATRIX OFF" "FELTOR_FILE_WITH_NETCDF OFF"

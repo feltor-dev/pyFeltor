@@ -45,7 +45,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest] # Feltor-8.2 does not build on mac using clang++
+        os: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v4
