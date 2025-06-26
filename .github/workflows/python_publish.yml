@@ -1,48 +1,103 @@
 name: Build/publish Python Package
 
-on: push
+# Adopted from gh:pybind/scikit_build_example
+# Read more on https://cibuildwheel.pypa.io/en/stable
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+     - main
+  release:
+    types:
+      - published
+
+env:
+  FORCE_COLOR: 3
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  build_sdist:
+    name: Build SDist
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install build twine
-      - name: Build package
-        run: |
-          python -m build --sdist --wheel
-      - name: Check package
-        run: |
-          python -m twine check dist/*
-      - name: Store the distribution packages
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-package-distributions
-          path: dist/
+    - uses: actions/checkout@v4
 
-  publish-to-pypi:
-    if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
-    needs:
-      - build
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-    permissions:
-      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    - name: Build SDist
+      run: pipx run build --sdist
+
+    - name: Check metadata
+      run: pipx run twine check dist/*
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: cibw-sdist
+        path: dist/*.tar.gz
+
+
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+
     steps:
-      - name: Download distribution packages
-        uses: actions/download-artifact@v4
-        with:
-          name: python-package-distributions
-          path: dist/
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+    - uses: actions/checkout@v4
+
+    - uses: astral-sh/setup-uv@v4
+
+    - name: Build wheels
+      uses: pypa/cibuildwheel@v3.0.0
+      env:
+        CIBW_ARCHS_WINDOWS: auto64
+        CIBW_ENVIRONMENT_MACOS: CXX="g++-13" MACOSX_DEPLOYMENT_TARGET="14.0"
+      with:
+        package-dir: .
+        output-dir: wheelhouse
+        config-file: "{package}/pyproject.toml"
+
+    - name: Verify clean directory
+      run: git diff --exit-code
+      shell: bash
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: cibw-wheels-${{ matrix.os }}
+        path: wheelhouse/*.whl
+
+
+  upload_all:
+    name: Upload if release
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    environment: pypi
+    permissions:
+      id-token: write
+      attestations: write
+
+    steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+
+    - uses: actions/download-artifact@v4
+      with:
+        pattern: cibw-*
+        merge-multiple: true
+        path: dist
+
+    - name: Generate artifact attestation for sdist and wheels
+      uses: actions/attest-build-provenance@v1
+      with:
+        subject-path: "dist/*"
+
+    - uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        attestations: true

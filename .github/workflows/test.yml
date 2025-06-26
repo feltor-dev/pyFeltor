@@ -4,10 +4,11 @@ on: [push, pull_request]
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
         python-version: ["3.12", "3.13"]
 
     steps:
@@ -17,7 +18,12 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
+      shell: bash
       run: |
+        if [[ ${{ matrix.os }} = "macos-latest" ]]; then
+          export CXX=g++-13
+          g++-13 --version
+        fi
         python -m pip install --upgrade pip
         python -m pip install .[test]
     - name: Test with pytest
