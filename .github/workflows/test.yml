@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       shell: bash
       run: |
-        if [[ ${{ matrix.os }} = "macos-latest"]]; then
+        if [[ ${{ matrix.os }} = "macos-latest" ]]; then
           brew install llvm@19
           export CXX=$(brew --prefix llvm@19)/bin/clang++
         fi
