@@ -21,7 +21,8 @@ jobs:
       shell: bash
       run: |
         if [[ ${{ matrix.os }} = "macos-latest" ]]; then
-          export CXX=g++
+          export CXX=g++-13
+          g++-13 --version
         fi
         python -m pip install --upgrade pip
         python -m pip install .[test]

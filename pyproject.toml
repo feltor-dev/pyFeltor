@@ -47,7 +47,8 @@ skip = "*-musllinux*" # Skip musllinux (conflicts with libcudacxx)
 
 [tool.bibuildwheel.macos]
 before-build= [
-    "export CXX=g++"
+    "export CXX=g++-13",
+    "g++-13 --version"
 ]
 
 [tool.cibuildwheel.pyodide]
